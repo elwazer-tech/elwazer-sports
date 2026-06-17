@@ -101,7 +101,7 @@
                 object-fit: fill !important; 
             }
 
-            /* 🎯 تنسيق اللوجو الأصلي المعتمد لديك بالكامل دون أي تعديل 🎯 */
+            /* 🎯 تنسيق اللوجو الأصلي المعتمد لديك بالكامل دون أي تعديل في الشاشة المصغرة 🎯 */
             .custom-video-logo {
                 position: absolute !important;
                 top: 0.1% !important;            /* الارتفاع المثالي الذي اعتمدته */
@@ -114,6 +114,7 @@
                 background: transparent !important; 
                 margin: 0 !important;
                 padding: 0 !important;
+                transition: right 0.1s ease-in-out; /* حركة ناعمة عند التحول لوضع ملء الشاشة */
             }
 
             /* زر تفعيل الصوت التفاعلي المطور للتغلب على حماية المتصفحات */
@@ -219,11 +220,12 @@
                     Channel 2
                 </a>
             </li>
-<li>
+            <li>
                 <a class="tablinks" onclick="changeSource('#', this)">
                     Channel 3
                 </a>
-            </li>            <li>
+            </li>            
+            <li>
                 <a class="tablinks" onclick="changeSource('#', this)">
                     Channel 4
                 </a>
@@ -263,8 +265,8 @@
         </div>
 
         <script>
-            // استعادة القناة الأخيرة أو تشغيل القناة الأولى كخيار افتراضي
-            var defaultUrl = 'https://live.kooran53.cfd/goolato3_3480/index.m3u8'; 
+            // 🎯 تم تصحيح الرابط الافتراضي بإزالة الرقم الزائد (3480 إلى 480) لكي يبدأ البث فوراً 🎯
+            var defaultUrl = 'https://live.kooran53.cfd/goolato3_480/index.m3u8'; 
             var defaultIndex = 0;
 
             var savedUrl = localStorage.getItem('savedChannelUrl');
@@ -275,6 +277,9 @@
 
             // إذا كانت القناة المحفوظة فارغة أو '#' لا نمرر رابط خاطئ للمشغل
             var initialSource = (activeUrl && activeUrl !== '#') ? activeUrl : '';
+
+            // 🎯 استخدام متغير مستقل لتتبع القناة المشغلة حالياً لمنع تجميد بقية القنوات عند الانهيار 🎯
+            var currentPlayingUrl = activeUrl;
 
             var player = new Clappr.Player({
                 source: initialSource, 
@@ -342,6 +347,20 @@
                 }
             });
 
+            // 🎯 مستمع تفاعلي وحاسم لتبديل وضع ملء الشاشة وتغيير إزاحة اللوجو تلقائياً 🎯
+            player.on(Clappr.Events.CORE_FULLSCREEN, function(isCurrentlyFullscreen) {
+                var logo = document.getElementById('custom-logo');
+                if (logo) {
+                    if (isCurrentlyFullscreen) {
+                        // عند الدخول في وضع ملء الشاشة: نقوم بدفع اللوجو لليسار بنسبة 4.5% لتغطية اللوجو الداخلي
+                        logo.style.setProperty('right', '4.5%', 'important');
+                    } else {
+                        // عند العودة للوضع المصغر: يُعاد فوراً لوضعه الطبيعي المفضل لديك بنسبة 2.1%
+                        logo.style.setProperty('right', '2.1%', 'important');
+                    }
+                }
+            });
+
             // عند التبديل بين السيرفرات، يتكفل هذا المستمع بإعادة لصق الأزرار واللوحات التنبيهية والشعار
             player.on(Clappr.Events.CORE_CONTAINERS_CREATED, function() {
                 injectOverlays();
@@ -367,11 +386,10 @@
                 // إخفاء زر الصوت لمنع التداخل
                 document.getElementById('unmute-overlay').style.display = 'none';
 
-                // محاولة إعادة تشغيل وسحب السورس من السيرفر بالخلفية كل 5 ثوانٍ بصمت
+                // 🎯 استخدام المتغير العالمي الجديد لضمان إنعاش القناة النشطة حالياً فقط 🎯
                 setTimeout(function() {
-                    var currentSource = player.options.source;
-                    if (currentSource && currentSource !== '#') {
-                        player.load(currentSource);
+                    if (currentPlayingUrl && currentPlayingUrl !== '#') {
+                        player.load(currentPlayingUrl);
                         player.play();
                     }
                 }, 5000); 
@@ -397,7 +415,9 @@
                 var offlineOverlay = document.getElementById('offline-overlay');
                 var unmuteOverlay = document.getElementById('unmute-overlay');
 
-                // حفظ بيانات القناة الحالية
+                // 🎯 تحديث رابط التشغيل النشط فوراً لتوجيه نظام الإنعاش للقناة الجديدة 🎯
+                currentPlayingUrl = url;
+
                 localStorage.setItem('savedChannelUrl', url);
                 var links = document.querySelectorAll('.tablinks');
                 var index = Array.from(links).indexOf(element);
