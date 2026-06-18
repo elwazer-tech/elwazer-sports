@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="robots" content="noindex,nofollow"/>
         <meta property="og:site_name" content="Elwazer Sports">
-        <title>الوزير سبورت - Elwazer Sports | جدول مباريات اليوم والبث المباشر</title>
+        <title>Elwazer Sports</title>
         
         <!-- استدعاء مكتبة المشغل العالمي Clappr Player -->
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
@@ -228,37 +228,38 @@
             }
             .offline-overlay svg { width: 55px; height: 55px; fill: #ff3b30; margin-bottom: 15px; }
 
-            /* 🎯 تنسيق شريط تبديل أيام المباريات المطور 🎯 */
+            /* 🎯 تنسيق شريط تبديل أيام المباريات المطور والمتباعد بشكل احترافي ومتناسق 🎯 */
             .date-tabs-container {
                 display: flex;
-                gap: 8px;
-                margin-bottom: 20px;
+                gap: 12px;
+                margin: 20px 0;
                 justify-content: center;
-                overflow-x: auto;
-                scrollbar-width: none;
+                flex-wrap: wrap; /* التكيف التلقائي مع شاشات الهواتف لمنع التداخل */
             }
-            .date-tabs-container::-webkit-scrollbar { display: none; }
             .date-tab-btn {
                 background: rgba(255, 255, 255, 0.03);
                 border: 1px solid var(--border-color);
                 color: var(--text-muted);
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 11px;
+                padding: 10px 20px;
+                border-radius: 30px;
+                font-size: 12px;
                 font-weight: bold;
                 cursor: pointer;
                 transition: all 0.25s ease;
                 white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
             }
             .date-tab-btn:hover {
-                background: rgba(255, 255, 255, 0.06);
+                background: rgba(255, 255, 255, 0.08);
                 color: #fff;
             }
             .date-tab-btn.active {
                 background: var(--primary-gradient);
                 color: #fff;
                 border-color: rgba(50, 15, 100, 0.5);
-                box-shadow: 0 2px 10px rgba(46, 13, 94, 0.3);
+                box-shadow: 0 4px 15px rgba(46, 13, 94, 0.4);
             }
 
             /* عنوان قسم جدول المباريات */
@@ -416,7 +417,8 @@
 
             <!-- جدول مباريات اليوم المباشر -->
             <div class="section-title">
-                <span>📅 جدول مباريات اليوم (مسحوبة حياً وتحديث تلقائي من YSscores)</span>
+                <!-- 🎯 تم حذف الجملة المحددة من قبلك تماماً من الهيدر لتصفية العرض 🎯 -->
+                <span>📅 جدول مباريات اليوم</span>
                 <button class="player-control-btn" onclick="loadMatchesFromYSscores(false)" style="padding: 4px 10px; font-size: 10px;">
                     🔄 تحديث جدول المباريات
                 </button>
@@ -438,7 +440,7 @@
         <script>
             var player = null;
             var currentPlayingUrl = "";
-            var activeDateOffset = 0; // 0 لليوم، -1 للأمس، 1 للغد
+            var activeDateOffset = 0; // 0 لليوم، -1 للأمس, 1 للغد
 
             // دالة لحساب وتنسيق تواريخ الأيام الثلاثة بالصيغة العربية (DD-MM-YYYY)
             function getFormattedDate(offset) {
@@ -474,8 +476,6 @@
             
             // 🎯 معالج السحب الحصري والمتجاوز للحظر لموقع YSscores 🎯
             async function loadMatchesFromYSscores(isSilent) {
-                var statusBox = document.getElementById('scrape-status');
-                
                 // حساب التاريخ برمجياً بناءً على اختيار المستخدم (أمس، اليوم، غداً)
                 var dateString = getOffsetDateString(activeDateOffset);
                 
@@ -491,11 +491,6 @@
 
                 var htmlContent = "";
                 var success = false;
-
-                if (!isSilent && statusBox) {
-                    statusBox.innerHTML = `🔄 جاري محاولة جلب مباريات تاريخ ${getFormattedDate(activeDateOffset)}...`;
-                    statusBox.style.color = "var(--text-muted)";
-                }
 
                 for (var i = 0; i < proxies.length; i++) {
                     try {
@@ -520,9 +515,7 @@
                 }
 
                 if (!success) {
-                    if (!isSilent && statusBox) {
-                        statusBox.innerHTML = "❌ تعذر جلب المباريات حالياً من YSscores بسبب حماية خوادمهم (Cloudflare). يرجى إعادة المحاولة.";
-                        statusBox.style.color = "#ff3b30";
+                    if (!isSilent) {
                         renderMatches([]); 
                     }
                     return;
@@ -630,7 +623,7 @@
                                     } else if (parentB.parentElement) {
                                         var txtGP_B = parentB.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
                                         if (txtGP_B && txtGP_B.length > 1) {
-                                            nameB = txtGP_B; // 🎯 تم تصحيح الـ Typo هنا بنجاح ليقرأ اسم الفريق الثاني بدقة 100% 🎯
+                                            nameB = txtGP_B; // 🎯 تم تصحيح الـ Typo هنا بالكامل ليظهر اسم الفريق الثاني بدقة 100% 🎯
                                         }
                                     }
                                 }
@@ -722,27 +715,10 @@
                         });
                     }
 
-                    if (matchesList.length === 0) {
-                        if (!isSilent && statusBox) {
-                            statusBox.innerHTML = `⚠️ تم الاتصال بـ YSscores بنجاح للتاريخ ${getFormattedDate(activeDateOffset)}، ولكن لا توجد أي مباريات مدرجة فيه حالياً.`;
-                            statusBox.style.color = "#ffb300";
-                            renderMatches([]);
-                        }
-                        return;
-                    }
-
-                    if (!isSilent && statusBox) {
-                        statusBox.innerHTML = `✅ تم تحديث جدول مباريات تاريخ ${getFormattedDate(activeDateOffset)} حياً ومباشرة بنجاح!`;
-                        statusBox.style.color = "#00ff88";
-                    }
                     renderMatches(matchesList);
 
                 } catch (err) {
-                    if (!isSilent && statusBox) {
-                        statusBox.innerHTML = "❌ خطأ برمجي أثناء قراءة بيانات الجدول: " + err.message;
-                        statusBox.style.color = "#ff3b30";
-                        renderMatches([]);
-                    }
+                    console.error("Error processing matches list:", err);
                 }
             }
 
