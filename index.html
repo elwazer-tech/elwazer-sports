@@ -241,22 +241,38 @@
             }
             .offline-overlay svg { width: 55px; height: 55px; fill: #ff3b30; margin-bottom: 15px; }
 
-            /* قسم تفاصيل المباراة وتشكيلتها المتوقعة */
-            .match-details-box {
-                background: #09090b; padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.06);
+            /* 🎯 تنسيق شريط تبديل أيام المباريات (أمس، اليوم، غداً) 🎯 */
+            .date-tabs-container {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                justify-content: center;
+                overflow-x: auto;
+                scrollbar-width: none;
             }
-            .detail-header {
-                font-size: 12px; font-weight: bold; margin-bottom: 10px; color: #ff007f;
+            .date-tabs-container::-webkit-scrollbar { display: none; }
+            .date-tab-btn {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--border-color);
+                color: var(--text-muted);
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.25s ease;
+                white-space: nowrap;
             }
-            .lineup-grid {
-                display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;
+            .date-tab-btn:hover {
+                background: rgba(255, 255, 255, 0.06);
+                color: #fff;
             }
-            .lineup-team {
-                background: rgba(255,255,255,0.01); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);
+            .date-tab-btn.active {
+                background: var(--primary-gradient);
+                color: #fff;
+                border-color: rgba(50, 15, 100, 0.5);
+                box-shadow: 0 2px 10px rgba(46, 13, 94, 0.3);
             }
-            .lineup-team h4 { font-size: 12px; color: #00ff88; margin-bottom: 8px; text-align: center; }
-            .lineup-team ul { list-style: none; font-size: 11px; color: var(--text-muted); }
-            .lineup-team li { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
             /* عنوان قسم جدول المباريات */
             .section-title {
@@ -414,21 +430,6 @@
                         <button class="server-tab-btn" onclick="switchServer('#', this)">Server 4</button>
                     </div>
                 </div>
-
-                <!-- تفاصيل المباراة وتشكيلتها المتوقعة -->
-                <div class="match-details-box">
-                    <div class="detail-header">📊 تفاصيل المباراة والتشكيلة المتوقعة:</div>
-                    <div class="lineup-grid">
-                        <div class="lineup-team" id="lineup-team-a">
-                            <h4 id="team-a-title">الفريق الأول</h4>
-                            <ul id="team-a-list"></ul>
-                        </div>
-                        <div class="lineup-team" id="lineup-team-b">
-                            <h4 id="team-b-title">الفريق الثاني</h4>
-                            <ul id="team-b-list"></ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- جدول مباريات اليوم المباشر -->
@@ -437,6 +438,13 @@
                 <button class="player-control-btn" onclick="loadMatchesFromYSscores(false)" style="padding: 4px 10px; font-size: 10px;">
                     🔄 تحديث جدول المباريات
                 </button>
+            </div>
+
+            <!-- 🎯 أزرار تبديل الأيام (أمس، اليوم، غداً) 🎯 -->
+            <div class="date-tabs-container">
+                <button class="date-tab-btn" id="date-btn-yesterday" onclick="changeDateOffset(-1, this)">⬅️ مباريات الأمس</button>
+                <button class="date-tab-btn active" id="date-btn-today" onclick="changeDateOffset(0, this)">📅 مباريات اليوم</button>
+                <button class="date-tab-btn" id="date-btn-tomorrow" onclick="changeDateOffset(1, this)">مباريات الغد ➡️</button>
             </div>
 
             <div class="matches-grid" id="matches-container">
@@ -448,18 +456,36 @@
         <script>
             var player = null;
             var currentPlayingUrl = "";
+            var activeDateOffset = 0; // 0 لليوم، -1 للأمس، 1 للغد
+
+            // دالة لحساب التاريخ المقابل لـ Offset بدقة ونقلها لـ YSscores
+            function getOffsetDateString(offset) {
+                var d = new Date();
+                d.setDate(d.getDate() + offset);
+                var yyyy = d.getFullYear();
+                var mm = String(d.getMonth() + 1).padStart(2, '0');
+                var dd = String(d.getDate()).padStart(2, '0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            // وظيفة تبديل الأيام وإعادة شحن الجدول
+            function changeDateOffset(offset, element) {
+                activeDateOffset = offset;
+                
+                document.querySelectorAll('.date-tab-btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                element.classList.add('active');
+                
+                loadMatchesFromYSscores(false);
+            }
             
-            // 🎯 معالج السحب الحصري والمتجاوز للحظر لموقع YSscores (النسخة الإنجليزية لضمان الدقة المطلقة في الأسماء والنتائج) 🎯
+            // 🎯 معالج السحب الحصري والمتجاوز للحظر لموقع YSscores 🎯
             async function loadMatchesFromYSscores(isSilent) {
                 var statusBox = document.getElementById('scrape-status');
                 
-                // 🎯 استخدام تاريخ اليوم الحالي برمجياً وتمريره لـ YSscores كفلتر لضمان جلب مباريات اليوم حصرياً 🎯
-                var today = new Date();
-                var yyyy = today.getFullYear();
-                var mm = String(today.getMonth() + 1).padStart(2, '0');
-                var dd = String(today.getDate()).padStart(2, '0');
-                var dateString = `${yyyy}-${mm}-${dd}`; // مثال: 2026-06-18
-                
+                // حساب التاريخ برمجياً بناءً على اختيار المستخدم (أمس، اليوم، غداً)
+                var dateString = getOffsetDateString(activeDateOffset);
                 var targetUrl = `https://www.ysscores.com/en/index?date=${dateString}`;
                 
                 // قائمة السيرفرات الوسيطة (Proxies) المفتوحة والمتاحة لتخطي الحماية
@@ -473,7 +499,7 @@
                 var success = false;
 
                 if (!isSilent) {
-                    statusBox.innerHTML = "🔄 جاري محاولة الاتصال بـ YSscores...";
+                    statusBox.innerHTML = `🔄 جاري محاولة الاتصال بـ YSscores للتاريخ ${dateString}...`;
                     statusBox.style.color = "var(--text-muted)";
                 }
 
@@ -591,7 +617,7 @@
                                 logoA = imgs[0].src;
                                 logoB = imgs[1].src;
                                 
-                                // 🎯 معالجة ممتدة وثنائية الاتجاه لقراءة الأسماء الإنجليزية للفرقتين بشكل حقيقي ومتكامل 🎯
+                                // 🎯 قراءة وتثبيت أسماء الفرق الإنجليزية لـ Team A و Team B برمجياً وبدقة 100% 🎯
                                 var parentA = imgs[0].parentElement;
                                 var parentB = imgs[1].parentElement;
                                 if (parentA) {
@@ -610,7 +636,7 @@
                                     } else if (parentB.parentElement) {
                                         var txtGP_B = parentB.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
                                         if (txtGP_B && txtGP_B.length > 1) {
-                                            nameB = txtGP_B; // 🎯 تم تصحيح الـ Typo هنا بنجاح ليقرأ اسم الفريق الثاني بدقة 100% 🎯
+                                            nameB = txtGP_B; // 🎯 تم إصلاح الـ Typo القديم لتظهر أسماء الفرق بشكل صحيح تماماً 🎯
                                         }
                                     }
                                 }
@@ -704,7 +730,7 @@
 
                     if (matchesList.length === 0) {
                         if (!isSilent) {
-                            statusBox.innerHTML = "⚠️ تم الاتصال بـ YSscores بنجاح، ولكن لا توجد أي مباريات مدرجة لليوم حالياً.";
+                            statusBox.innerHTML = `⚠️ تم الاتصال بـ YSscores بنجاح للتاريخ ${dateString}، ولكن لا توجد أي مباريات مدرجة فيه حالياً.`;
                             statusBox.style.color = "#ffb300";
                             renderMatches([]);
                         }
@@ -712,7 +738,7 @@
                     }
 
                     if (!isSilent) {
-                        statusBox.innerHTML = "✅ تم جلب وتحديث جدول مباريات اليوم حياً ومباشرة بنجاح!";
+                        statusBox.innerHTML = `✅ تم تحديث جدول مباريات تاريخ ${dateString} حياً ومباشرة بنجاح!`;
                         statusBox.style.color = "#00ff88";
                     }
                     renderMatches(matchesList);
@@ -753,7 +779,7 @@
                 return null;
             }
 
-            // عرض الكروت في الواجهة مع النتائج الحية والبطولات الحقيقية (بدون معلق) [2]
+            // عرض الكروت في الواجهة مع النتائج الحية والبطولات الحقيقية (بدون معلق)
             function renderMatches(list) {
                 var container = document.getElementById('matches-container');
                 container.innerHTML = "";
@@ -761,7 +787,7 @@
                 if (list.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            📡 لا توجد مباريات حية معروضة حالياً من المصدر، أو أن خوادم YSscores محجوبة مؤقتاً.
+                            📡 لا توجد مباريات حية معروضة حالياً من المصدر لهذا اليوم، أو أن خوادم YSscores محجوبة مؤقتاً.
                             <button class="player-control-btn" onclick="loadMatchesFromYSscores(false)" style="margin-top: 15px; background: var(--primary-gradient);">🔄 إعادة المحاولة والتحميل</button>
                         </div>
                     `;
@@ -833,18 +859,13 @@
                 });
             }
 
-            // اختيار مباراة وتشغيل السيرفر الأول وجلب التشكيلة الحية بالخلفية
+            // اختيار مباراة وتشغيل السيرفر الأول
             function selectMatch(match) {
                 var liveSection = document.getElementById('live-section');
                 liveSection.style.display = 'block';
                 liveSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                 document.getElementById('player-status-title').innerText = "📡 مباراة: " + match.teamA.name + " ضد " + match.teamB.name;
-                document.getElementById('team-a-title').innerText = "تشكيلة " + match.teamA.name;
-                document.getElementById('team-b-title').innerText = "تشكيلة " + match.teamB.name;
-
-                // جلب وسحب التشكيلة الرسمية حياً من سيرفر المباراة بالخلفية
-                fetchLiveLineup(match.matchUrl);
 
                 // إعادة تفعيل السيرفر الأول كخيار افتراضي عند فتح اللقاء
                 var defaultServerBtn = document.querySelector('.server-tab-btn');
@@ -855,164 +876,6 @@
                 if (defaultServerBtn) defaultServerBtn.classList.add('active');
 
                 loadStream(defaultUrl);
-            }
-
-            // دالة سحب التشكيلة الحية والحقيقية لكل لقاء من الرابط الداخلي بالخلفية
-            async function fetchLiveLineup(matchUrl) {
-                var listA = document.getElementById('team-a-list');
-                var listB = document.getElementById('team-b-list');
-                
-                listA.innerHTML = "<li>🔄 جاري سحب التشكيلة الرسمية الحية...</li>";
-                listB.innerHTML = "<li>🔄 جاري سحب التشكيلة الرسمية الحية...</li>";
-
-                if (!matchUrl || matchUrl === '#' || matchUrl === '') {
-                    useDefaultLineups();
-                    return;
-                }
-
-                // سحب صفحة اللقاء الفردية برمجياً عبر الـ Proxy
-                var proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(matchUrl);
-                try {
-                    var response = await fetch(proxyUrl);
-                    if (!response.ok) {
-                        proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(matchUrl);
-                        response = await fetch(proxyUrl);
-                    }
-                    var htmlContent = "";
-                    if (proxyUrl.includes('allorigins')) {
-                        var json = await response.json();
-                        htmlContent = json.contents;
-                    } else {
-                        htmlContent = await response.text();
-                    }
-
-                    var parser = new DOMParser();
-                    var doc = parser.parseFromString(htmlContent, 'text/html');
-
-                    // 1. تفكيك شفرة Next.js الخاصة بصفحة المباراة لقراءة التشكيلة الرسمية
-                    var nextDataEl = doc.getElementById('__NEXT_DATA__');
-                    if (nextDataEl) {
-                        try {
-                            var jsonData = JSON.parse(nextDataEl.textContent);
-                            var homeLineup = findLineupArrayInDetail(jsonData, 'home');
-                            var awayLineup = findLineupArrayInDetail(jsonData, 'away');
-
-                            if (homeLineup && homeLineup.length > 0 && awayLineup && awayLineup.length > 0) {
-                                renderLineups(homeLineup, awayLineup);
-                                return;
-                            }
-                        } catch (e) {
-                            console.warn("Next.js Lineup Parse failed, trying DOMFallback:", e);
-                        }
-                    }
-
-                    // 2. معالج الـ DOM الاحتياطي لقراءة قوائم التشكيلة من عناصر الصفحة
-                    var lineupContainers = doc.querySelectorAll('.lineup, [class*="lineup"], [class*="starting-xi"]');
-                    if (lineupContainers.length >= 2) {
-                        var playersA = extractPlayersFromDOM(lineupContainers[0]);
-                        var playersB = extractPlayersFromDOM(lineupContainers[1]);
-                        if (playersA.length > 0 && playersB.length > 0) {
-                            renderLineups(playersA, playersB);
-                            return;
-                        }
-                    }
-
-                    // إذا لم يتم تحديث التشكيلة الرسمية على السيرفر بعد
-                    useDefaultLineups("📋 التشكيلة الرسمية لم تصدر بعد من المصدر.");
-
-                } catch (err) {
-                    console.log("Failed fetching live lineup:", err.message);
-                    useDefaultLineups();
-                }
-            }
-
-            // معالجة وحفر بيانات التشكيلة داخل الـ Props الخاصة بصفحة اللقاء الفردية
-            function findLineupArrayInDetail(obj, teamType) {
-                if (!obj || typeof obj !== 'object') return null;
-                
-                // العثور على حقول home_team أو away_team
-                if (teamType === 'home' && (obj.home_team || obj.homeTeam || obj.home)) {
-                    var team = obj.home_team || obj.homeTeam || obj.home;
-                    return findPlayersArrayInTeam(team);
-                }
-                if (teamType === 'away' && (obj.away_team || obj.awayTeam || obj.away)) {
-                    var team = obj.away_team || obj.awayTeam || obj.away;
-                    return findPlayersArrayInTeam(team);
-                }
-
-                for (var key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        var res = findLineupArrayInDetail(obj[key], teamType);
-                        if (res) return res;
-                    }
-                }
-                return null;
-            }
-
-            function findPlayersArrayInTeam(team) {
-                if (!team || typeof team !== 'object') return null;
-                
-                for (var key in team) {
-                    if (team.hasOwnProperty(key) && Array.isArray(team[key])) {
-                        var arr = team[key];
-                        if (arr.length > 0) {
-                            var first = arr[0];
-                            if (first && typeof first === 'object') {
-                                var keys = Object.keys(first).join(',').toLowerCase();
-                                if (keys.includes('player') || keys.includes('name') || keys.includes('number')) {
-                                    // صياغة مسطحة لأسماء اللاعبين وأرقام قمصانهم ومواقعهم
-                                    return arr.map(function(p) {
-                                        var name = p.name_en || p.name || (p.player ? (p.player.name_en || p.player.name) : "Player");
-                                        var number = p.shirt_number || p.number || "";
-                                        var pos = p.position || p.position_en || "";
-                                        
-                                        var posText = "";
-                                        if (pos) {
-                                            if (pos.toLowerCase().includes('gk') || pos.includes('GK')) posText = " [Goalkeeper]";
-                                            else if (pos.toLowerCase().includes('df') || pos.includes('DF')) posText = " [Defender]";
-                                            else if (pos.toLowerCase().includes('mf') || pos.includes('MF')) posText = " [Midfielder]";
-                                            else if (pos.toLowerCase().includes('fw') || pos.includes('FW')) posText = " [Forward]";
-                                        }
-
-                                        return (number ? `(${number}) ` : "") + name + posText;
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return null;
-            }
-
-            // استخراج أسماء اللاعبين من عناصر الـ DOM في حال الانهيار
-            function extractPlayersFromDOM(container) {
-                var players = [];
-                var items = container.querySelectorAll('li, tr, [class*="player"]');
-                items.forEach(function(item) {
-                    var name = item.textContent.replace(/\s+/g, ' ').trim();
-                    if (name && name.length > 2 && name.length < 40 && !name.includes("Coach") && !name.includes("Manager")) {
-                        players.push(name);
-                    }
-                });
-                return players;
-            }
-
-            // طباعة التشكيلات
-            function renderLineups(arrA, arrB) {
-                var listA = document.getElementById('team-a-list');
-                var listB = document.getElementById('team-b-list');
-                listA.innerHTML = "";
-                listB.innerHTML = "";
-
-                arrA.forEach(function(p) { listA.innerHTML += `<li>🏃‍♂️ ${p}</li>`; });
-                arrB.forEach(function(p) { listB.innerHTML += `<li>🏃‍♂️ ${p}</li>`; });
-            }
-
-            // تشكيلة افتراضية في حال تعذر السحب
-            function useDefaultLineups(message) {
-                var text = message || "📋 Official lineup is not available yet.";
-                document.getElementById('team-a-list').innerHTML = `<li>⚠️ ${text}</li>`;
-                document.getElementById('team-b-list').innerHTML = `<li>⚠️ ${text}</li>`;
             }
 
             // تشغيل السيرفرات الأربعة لتبديل السورس
