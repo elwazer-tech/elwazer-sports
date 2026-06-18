@@ -296,7 +296,7 @@
             .match-status {
                 padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;
             }
-            .status-live { background: rgba(255, 0, 127, 0.15); color: #ff007f; animation: blink 1.5s infinite; }
+            .status-live { background: rgba(255, 0, 127, 0.15); color: #00ff88; animation: blink 1.5s infinite; }
             .status-waiting { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
             .status-ended { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
 
@@ -316,7 +316,7 @@
             }
             .match-time { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 3px; }
             
-            /* 🎯 تنسيقات الأهداف الحية والنتائج النهائية 🎯 */
+            /* تنسيقات الأهداف الحية والنتائج النهائية */
             .match-score-live { font-size: 20px; font-weight: 800; color: #00ff88; letter-spacing: 2px; }
             .match-score-final { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; }
             .match-minute-badge { background: rgba(0, 255, 136, 0.15); color: #00ff88; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px; display: inline-block; }
@@ -398,13 +398,13 @@
 
                         <div id="unmute-overlay" class="unmute-overlay" onclick="unmutePlayer()">
                             <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.16 6.07-5.14 7.03c1.92-.61 3.44-2.13 4.05-4.05C18.42 13.93 19 12.82 19 12zm-8.81 7.19L5.35 14H2v-4h3.35l4.84-5.19C10.74 4.26 11.5 4.61 11.5 5.3v13.4c0 .69-.76 1.04-1.31.49z"/></svg>
-                            انقر لتفعيل الصوت والمشاهدة
+                    إلغاء الكتم وتفعيل الصوت
                         </div>
 
                     </div>
                 </div>
 
-                <!-- 🎯 السيرفرات والقنوات الأربعة الخاصة بك مدمجة مباشرة أسفل مشغل كل مباراة 🎯 -->
+                <!-- السيرفرات والقنوات الأربعة الخاصة بك مدمجة مباشرة أسفل مشغل كل مباراة -->
                 <div class="player-servers-container">
                     <span class="server-label">📺 اختر سيرفر البث الخاص بك لتشغيل اللقاء:</span>
                     <div class="servers-row">
@@ -453,7 +453,7 @@
             async function loadMatchesFromYSscores(isSilent) {
                 var statusBox = document.getElementById('scrape-status');
                 
-                // جلب النسخة العربية للحصول على الأسماء والنتائج باللغة العربية تلقائياً
+                // جلب النسخة العربية للحصول على الأسماء والنتائج باللغة العربية تلقائياً وبأبعاد صحيحة
                 var targetUrl = 'https://www.ysscores.com/ar/index';
                 
                 // قائمة السيرفرات الوسيطة (Proxies) المفتوحة والمتاحة لتخطي الحماية
@@ -523,7 +523,7 @@
                                     var logoB = item.away_team_logo || (item.away_team ? item.away_team.logo : "https://placehold.co/45");
                                     var time = item.time || item.match_time || "09:00 م";
                                     
-                                    // 🎯 جلب الأهداف الحية والنتيجة الحالية بشكل فوري وديناميكي 🎯
+                                    // جلب الأهداف الحية والنتيجة الحالية بشكل فوري وديناميكي
                                     var scoreA = item.home_score !== undefined ? item.home_score : (item.home_team_score !== undefined ? item.home_team_score : "");
                                     var scoreB = item.away_score !== undefined ? item.away_score : (item.away_team_score !== undefined ? item.away_team_score : "");
                                     var minute = item.minute || item.match_minute || "";
@@ -552,7 +552,6 @@
                                     if (logoA && logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
                                     if (logoB && logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
 
-                                    // استخراج رابط صفحة المباراة الفردية لجلب التشكيلة منها في الخلفية لاحقاً
                                     var matchSlug = item.slug || item.id || "";
                                     var matchPageUrl = matchSlug ? `https://www.ysscores.com/ar/match/${matchSlug}` : "";
 
@@ -577,35 +576,121 @@
                         }
                     }
 
-                    // 2. معالج الـ DOM الاحتياطي في حال عدم العثور على Next JSON
+                    // 2. معالج الـ DOM الاحتياطي في حال عدم العثور على Next JSON أو لضمان استقرار السحب المطلق
                     if (matchesList.length === 0) {
                         var matchBoxes = doc.querySelectorAll('a[href*="/match/"], [class*="match-card"], [class*="match_card"], .match-row');
                         
                         matchBoxes.forEach(function(el, index) {
-                            var teamData = extractTeamData(el);
-                            var metaData = extractMatchMeta(el);
+                            // 🎯 معالج قراءة الأسماء الحقيقية المجاورة للشعارات مباشرة لضمان عدم حدوث أي حظر أو أسماء وهمية 🎯
+                            var nameA = "الفريق الأول";
+                            var nameB = "الفريق الثاني";
+                            var logoA = "https://placehold.co/45";
+                            var logoB = "https://placehold.co/45";
 
-                            // استخراج النتائج من الـ DOM في حال الانهيار
+                            var imgs = el.querySelectorAll('img');
+                            if (imgs.length >= 2) {
+                                logoA = imgs[0].src;
+                                logoB = imgs[1].src;
+                                
+                                var parentA = imgs[0].parentElement;
+                                var parentB = imgs[1].parentElement;
+                                if (parentA) {
+                                    var txtA = parentA.textContent.replace(/\s+/g, ' ').trim();
+                                    if (txtA && txtA.length > 1) nameA = txtA;
+                                }
+                                if (parentB) {
+                                    var txtB = parentB.textContent.replace(/\s+/g, ' ').trim();
+                                    if (txtB && txtB.length > 1) nameB = txtB;
+                                }
+                            }
+
+                            if (logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
+                            if (logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
+
+                            // 🎯 سحب البطولة الحقيقية آلياً بالصعود في شجرة كود الصفحة للعثور على البطولة المحددة 🎯
+                            var league = "بطولة دولية";
+                            var current = el;
+                            while (current && current !== doc.body) {
+                                var titleEl = current.querySelector('[class*="championship" i] h2, [class*="championship" i] h3, [class*="tournament" i] h2, [class*="title" i], h2, h3');
+                                if (titleEl) {
+                                    league = titleEl.textContent.trim();
+                                    break;
+                                }
+                                var prev = current.previousElementSibling;
+                                while (prev) {
+                                    var headerEl = prev.querySelector('h2, h3, [class*="title" i], [class*="header" i]');
+                                    if (!headerEl && (prev.tagName === 'H2' || prev.tagName === 'H3' || prev.className.toLowerCase().includes('title') || prev.className.toLowerCase().includes('header'))) {
+                                        headerEl = prev;
+                                    }
+                                    if (headerEl) {
+                                        league = headerEl.textContent.trim();
+                                        break;
+                                    }
+                                    prev = prev.previousElementSibling;
+                                }
+                                if (league !== "بطولة دولية") break;
+                                current = current.parentElement;
+                            }
+                            league = league.replace(/\s+/g, ' ').trim();
+
+                            // سحب التوقيت والنتائج الفعلية
+                            var time = "09:00 م";
+                            var timeEls = el.querySelectorAll('.match-time, .time-match, .time, .match_time, [class*="time" i]');
+                            if (timeEls.length > 0) {
+                                time = timeEls[0].textContent.trim();
+                            } else {
+                                var timeMatch = el.textContent.match(/\d{1,2}:\d{2}\s*(م|ص|pm|am)?/i);
+                                if (timeMatch) time = timeMatch[0];
+                            }
+
+                            var status = "live";
+                            if (el.textContent.includes("انتهت") || el.textContent.includes("ended") || el.textContent.includes("لم تبدأ") || el.textContent.includes("Ended") || el.textContent.includes("Finished")) {
+                                status = "waiting";
+                            }
+
                             var scoreA = "";
                             var scoreB = "";
-                            var scoreEls = el.querySelectorAll('.score, [class*="score"]');
+                            var scoreEls = el.querySelectorAll('.score, [class*="score" i]');
                             if (scoreEls.length >= 2) {
                                 scoreA = scoreEls[0].textContent.trim();
                                 scoreB = scoreEls[1].textContent.trim();
+                            } else {
+                                var numbers = el.textContent.match(/\d+\s*-\s*\d+/);
+                                if (numbers) {
+                                    var parts = numbers[0].split('-');
+                                    scoreA = parts[0].trim();
+                                    scoreB = parts[1].trim();
+                                }
                             }
+
+                            // سحب القناة والملعب والمعلق بدقة فائقة
+                            var channel = "beIN Sports MAX 1";
+                            var commentator = "معلق اللقاء";
+                            el.querySelectorAll('span, div, p').forEach(function(node) {
+                                if (node.children.length === 0) {
+                                    var text = node.textContent.replace(/\s+/g, ' ').trim();
+                                    if (text) {
+                                        if (text.toLowerCase().includes('bein') || text.includes('قناة') || text.includes('الكأس') || text.toLowerCase().includes('sport')) {
+                                            channel = text;
+                                        } else if (text.includes('معلق') || text.includes('بصوت') || (text.length > 4 && text.length < 20 && !text.includes(':') && !text.includes('م') && !text.includes('ص') && text !== league && text !== nameA && text !== nameB)) {
+                                            commentator = text;
+                                        }
+                                    }
+                                }
+                            });
 
                             matchesList.push({
                                 id: index + 1,
-                                league: metaData.league,
-                                status: metaData.status,
-                                teamA: { name: teamData.nameA, logo: teamData.logoA },
-                                teamB: { name: teamData.nameB, logo: teamData.logoB },
-                                time: metaData.time,
+                                league: league,
+                                status: status,
+                                teamA: { name: nameA, logo: logoA },
+                                teamB: { name: nameB, logo: logoB },
+                                time: time,
                                 scoreA: scoreA,
                                 scoreB: scoreB,
                                 minute: "",
-                                channel: metaData.channel,
-                                commentator: metaData.commentator,
+                                channel: channel,
+                                commentator: commentator,
                                 matchUrl: el.href || ""
                             });
                         });
@@ -621,7 +706,7 @@
                     }
 
                     if (!isSilent) {
-                        statusBox.innerHTML = "✅ تم جلب وتحديث المباريات حياً ومباشرة من YSscores بنجاح!";
+                        statusBox.innerHTML = "✅ تم جلب وتحديث جدول مباريات اليوم حياً ومباشرة بنجاح!";
                         statusBox.style.color = "#00ff88";
                     }
                     renderMatches(matchesList);
@@ -644,8 +729,9 @@
                         var item = obj[0];
                         if (item && typeof item === 'object') {
                             var keys = Object.keys(item).join(',').toLowerCase();
-                            if ((keys.includes('team') || keys.includes('opponent') || keys.includes('home') || keys.includes('away')) && 
-                                (keys.includes('time') || keys.includes('status') || keys.includes('score') || keys.includes('id'))) {
+                            if ((keys.includes('home_team') || keys.includes('hometeam')) && 
+                                (keys.includes('away_team') || keys.includes('awayteam')) && 
+                                (keys.includes('championship') || keys.includes('league'))) {
                                 return obj;
                             }
                         }
@@ -661,86 +747,7 @@
                 return null;
             }
 
-            // وظيفة استخراج بيانات الفرق والشعارات بمرونة من الـ HTML
-            function extractTeamData(el) {
-                var nameA = "الفريق الأول";
-                var nameB = "الفريق الثاني";
-                var logoA = "https://placehold.co/45";
-                var logoB = "https://placehold.co/45";
-
-                var imgs = el.querySelectorAll('img');
-                if (imgs.length >= 2) {
-                    logoA = imgs[0].src;
-                    logoB = imgs[1].src;
-                } else if (imgs.length === 1) {
-                    logoA = imgs[0].src;
-                }
-
-                var nameEls = el.querySelectorAll('.team-name, .name-team, .team_name, .team-a .name, .team-b .name, .right-team .name, .left-team .name, h3, h4');
-                if (nameEls.length >= 2) {
-                    nameA = nameEls[0].textContent.trim();
-                    nameB = nameEls[1].textContent.trim();
-                } else {
-                    var candidates = [];
-                    el.querySelectorAll('span, div, p').forEach(function(node) {
-                        if (node.children.length === 0) {
-                            var text = node.textContent.trim();
-                            if (text && text.length > 2 && text.length < 25 && !text.includes(':') && !text.includes('م') && !text.includes('ص') && !text.includes('beIN') && !text.includes('HD')) {
-                                candidates.push(text);
-                            }
-                        }
-                    });
-                    if (candidates.length >= 2) {
-                        nameA = candidates[0];
-                        nameB = candidates[candidates.length - 1];
-                    }
-                }
-
-                if (logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
-                if (logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
-
-                return { nameA: nameA, nameB: nameB, logoA: logoA, logoB: logoB };
-            }
-
-            // وظيفة استخراج بيانات البطولة والتوقيت والقنوات من الـ HTML
-            function extractMatchMeta(el) {
-                var time = "09:00 م";
-                var league = "كأس العالم";
-                var channel = "beIN Sports MAX 1";
-                var commentator = "معلق اللقاء";
-                var status = "live";
-
-                var timeEls = el.querySelectorAll('.match-time, .time-match, .time, .match_time');
-                if (timeEls.length > 0) {
-                    time = timeEls[0].textContent.trim();
-                } else {
-                    var timeMatch = el.textContent.match(/\d{1,2}:\d{2}\s*(م|ص)?/);
-                    if (timeMatch) time = timeMatch[0];
-                }
-
-                var leagueEls = el.querySelectorAll('.league, .match-league, .league-name, .tournament');
-                if (leagueEls.length > 0) {
-                    league = leagueEls[0].textContent.trim();
-                }
-
-                var channelEls = el.querySelectorAll('.channel, .match-channel, .chanel');
-                if (channelEls.length > 0) {
-                    channel = channelEls[0].textContent.trim();
-                }
-
-                var commEls = el.querySelectorAll('.commentator, .match-commentator, .voice');
-                if (commEls.length > 0) {
-                    commentator = commEls[0].textContent.trim();
-                }
-
-                if (el.textContent.includes("انتهت") || el.textContent.includes("ended") || el.textContent.includes("لم تبدأ") || el.textContent.includes("Ended") || el.textContent.includes("Finished")) {
-                    status = "waiting";
-                }
-
-                return { time: time, league: league, channel: channel, commentator: commentator, status: status };
-            }
-
-            // عرض الكروت في الواجهة مع النتائج الحية
+            // عرض الكروت في الواجهة مع النتائج الحية والبطولات الحقيقية
             function renderMatches(list) {
                 var container = document.getElementById('matches-container');
                 container.innerHTML = "";
@@ -766,7 +773,7 @@
                         statusText = 'انتهت';
                     }
 
-                    // 🎯 تشكيل العمود الأوسط لعرض النتائج الحية والأهداف تلقائياً 🎯
+                    // تشكيل العمود الأوسط لعرض النتائج الحية والأهداف تلقائياً
                     var centerHtml = "";
                     if (match.status === 'live') {
                         centerHtml = `
@@ -831,7 +838,7 @@
                 document.getElementById('team-a-title').innerText = "تشكيلة " + match.teamA.name;
                 document.getElementById('team-b-title').innerText = "تشكيلة " + match.teamB.name;
 
-                // 🎯 جلب وسحب التشكيلة الرسمية حياً من سيرفر المباراة بالخلفية 🎯
+                // جلب وسحب التشكيلة الرسمية حياً من سيرفر المباراة بالخلفية
                 fetchLiveLineup(match.matchUrl);
 
                 // إعادة تفعيل السيرفر الأول كخيار افتراضي عند فتح اللقاء
@@ -1147,7 +1154,7 @@
                 loadMatchesFromYSscores(false);
             });
 
-            // 🎯 تحديث صامت وتلقائي للنتائج والأهداف والدقائق في الخلفية كل 60 ثانية (دون تشويش) 🎯
+            // تحديث صامت وتلقائي للنتائج والأهداف والدقائق في الخلفية كل 60 ثانية
             setInterval(function() {
                 loadMatchesFromYSscores(true);
             }, 60000);
