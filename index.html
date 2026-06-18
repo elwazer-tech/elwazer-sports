@@ -398,7 +398,7 @@
 
                         <div id="unmute-overlay" class="unmute-overlay" onclick="unmutePlayer()">
                             <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.16 6.07-5.14 7.03c1.92-.61 3.44-2.13 4.05-4.05C18.42 13.93 19 12.82 19 12zm-8.81 7.19L5.35 14H2v-4h3.35l4.84-5.19C10.74 4.26 11.5 4.61 11.5 5.3v13.4c0 .69-.76 1.04-1.31.49z"/></svg>
-                    إلغاء الكتم وتفعيل الصوت
+                            إلغاء الكتم وتفعيل الصوت
                         </div>
 
                     </div>
@@ -449,12 +449,12 @@
             var player = null;
             var currentPlayingUrl = "";
             
-            // 🎯 معالج السحب الحصري والمتجاوز للحظر لموقع YSscores (يلا شوت سكورس) 🎯
+            // 🎯 معالج السحب الحصري والمتجاوز للحظر لموقع YSscores (النسخة الإنجليزية لضمان الدقة المطلقة في الأسماء والنتائج) 🎯
             async function loadMatchesFromYSscores(isSilent) {
                 var statusBox = document.getElementById('scrape-status');
                 
-                // جلب النسخة العربية للحصول على الأسماء والنتائج باللغة العربية تلقائياً وبأبعاد صحيحة
-                var targetUrl = 'https://www.ysscores.com/ar/index';
+                // 🎯 استهداف النسخة الإنجليزية لتفادي أي مشاكل في تحليل الحروف العربية 🎯
+                var targetUrl = 'https://www.ysscores.com/en/index';
                 
                 // قائمة السيرفرات الوسيطة (Proxies) المفتوحة والمتاحة لتخطي الحماية
                 var proxies = [
@@ -516,12 +516,12 @@
                             
                             if (rawMatches && rawMatches.length > 0) {
                                 rawMatches.forEach(function(item, index) {
-                                    var league = item.championship_name_ar || item.championship_name || (item.championship ? (item.championship.name_ar || item.championship.name) : "بطولة دولية");
-                                    var nameA = item.home_team_name_ar || item.home_team_name || (item.home_team ? (item.home_team.name_ar || item.home_team.name) : "الفريق الأول");
-                                    var nameB = item.away_team_name_ar || item.away_team_name || (item.away_team ? (item.away_team.name_ar || item.away_team.name) : "الفريق الثاني");
+                                    var league = item.championship_name_en || item.championship_name || (item.championship ? (item.championship.name_en || item.championship.name) : "International Match");
+                                    var nameA = item.home_team_name_en || item.home_team_name || (item.home_team ? (item.home_team.name_en || item.home_team.name) : "Team A");
+                                    var nameB = item.away_team_name_en || item.away_team_name || (item.away_team ? (item.away_team.name_en || item.away_team.name) : "Team B");
                                     var logoA = item.home_team_logo || (item.home_team ? item.home_team.logo : "https://placehold.co/45");
                                     var logoB = item.away_team_logo || (item.away_team ? item.away_team.logo : "https://placehold.co/45");
-                                    var time = item.time || item.match_time || "09:00 م";
+                                    var time = item.time || item.match_time || "09:00 PM";
                                     
                                     // جلب الأهداف الحية والنتيجة الحالية بشكل فوري وديناميكي
                                     var scoreA = item.home_score !== undefined ? item.home_score : (item.home_team_score !== undefined ? item.home_team_score : "");
@@ -538,14 +538,14 @@
 
                                     var channel = "beIN Sports MAX 1";
                                     if (item.channels && item.channels.length > 0) {
-                                        channel = item.channels[0].name_ar || item.channels[0].name || channel;
+                                        channel = item.channels[0].name_en || item.channels[0].name || channel;
                                     } else if (item.tv_channels) {
                                         channel = item.tv_channels;
                                     }
 
-                                    var commentator = "معلق اللقاء";
+                                    var commentator = "English Commentator";
                                     if (item.commentators && item.commentators.length > 0) {
-                                        commentator = item.commentators[0].name_ar || item.commentators[0].name || commentator;
+                                        commentator = item.commentators[0].name_en || item.commentators[0].name || commentator;
                                     }
 
                                     // تصحيح الروابط النسبية
@@ -553,7 +553,7 @@
                                     if (logoB && logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
 
                                     var matchSlug = item.slug || item.id || "";
-                                    var matchPageUrl = matchSlug ? `https://www.ysscores.com/ar/match/${matchSlug}` : "";
+                                    var matchPageUrl = matchSlug ? `https://www.ysscores.com/en/match/${matchSlug}` : "";
 
                                     matchesList.push({
                                         id: index + 1,
@@ -581,98 +581,100 @@
                         var matchBoxes = doc.querySelectorAll('a[href*="/match/"], [class*="match-card"], [class*="match_card"], .match-row');
                         
                         matchBoxes.forEach(function(el, index) {
-                            // 🎯 معالج قراءة الأسماء الحقيقية المجاورة للشعارات مباشرة لضمان عدم حدوث أي حظر أو أسماء وهمية 🎯
-                            var nameA = "الفريق الأول";
-                            var nameB = "الفريق الثاني";
                             var logoA = "https://placehold.co/45";
                             var logoB = "https://placehold.co/45";
+                            var nameA = "Team A";
+                            var nameB = "Team B";
 
                             var imgs = el.querySelectorAll('img');
                             if (imgs.length >= 2) {
                                 logoA = imgs[0].src;
                                 logoB = imgs[1].src;
                                 
+                                // 🎯 استكشاف اسم الفريق الفعلي بالصعود والنزول في هيكل الصورة المجاورة له في الـ DOM 🎯
                                 var parentA = imgs[0].parentElement;
                                 var parentB = imgs[1].parentElement;
                                 if (parentA) {
-                                    var txtA = parentA.textContent.replace(/\s+/g, ' ').trim();
+                                    var txtA = parentA.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
                                     if (txtA && txtA.length > 1) nameA = txtA;
+                                    else if (parentA.parentElement) {
+                                        var txtGP_A = parentA.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
+                                        if (txtGP_A && txtGP_A.length > 1) nameA = txtGP_A;
+                                    }
                                 }
                                 if (parentB) {
-                                    var txtB = parentB.textContent.replace(/\s+/g, ' ').trim();
+                                    var txtB = parentB.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
                                     if (txtB && txtB.length > 1) nameB = txtB;
+                                    else if (parentB.parentElement) {
+                                        var txtGP_B = parentB.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
+                                        if (txtGP_B && txtB.length > 1) nameB = txtB;
+                                    }
                                 }
                             }
 
                             if (logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
                             if (logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
 
-                            // 🎯 سحب البطولة الحقيقية آلياً بالصعود في شجرة كود الصفحة للعثور على البطولة المحددة 🎯
-                            var league = "بطولة دولية";
+                            // 🎯 سحب البطولة الحقيقية بالصعود التكراري في الـ Ancestors 🎯
+                            var league = "International Match";
                             var current = el;
                             while (current && current !== doc.body) {
-                                var titleEl = current.querySelector('[class*="championship" i] h2, [class*="championship" i] h3, [class*="tournament" i] h2, [class*="title" i], h2, h3');
-                                if (titleEl) {
+                                var titleEl = current.querySelector('[class*="championship" i], [class*="tournament" i], [class*="title" i], h2, h3');
+                                if (titleEl && titleEl.textContent.trim().length > 3) {
                                     league = titleEl.textContent.trim();
                                     break;
                                 }
                                 var prev = current.previousElementSibling;
                                 while (prev) {
                                     var headerEl = prev.querySelector('h2, h3, [class*="title" i], [class*="header" i]');
-                                    if (!headerEl && (prev.tagName === 'H2' || prev.tagName === 'H3' || prev.className.toLowerCase().includes('title') || prev.className.toLowerCase().includes('header'))) {
+                                    if (!headerEl && (prev.tagName === 'H2' || prev.tagName === 'H3' || prev.className.toLowerCase().includes('title'))) {
                                         headerEl = prev;
                                     }
-                                    if (headerEl) {
+                                    if (headerEl && headerEl.textContent.trim().length > 3) {
                                         league = headerEl.textContent.trim();
                                         break;
                                     }
                                     prev = prev.previousElementSibling;
                                 }
-                                if (league !== "بطولة دولية") break;
+                                if (league !== "International Match") break;
                                 current = current.parentElement;
                             }
                             league = league.replace(/\s+/g, ' ').trim();
 
                             // سحب التوقيت والنتائج الفعلية
-                            var time = "09:00 م";
+                            var time = "09:00 PM";
                             var timeEls = el.querySelectorAll('.match-time, .time-match, .time, .match_time, [class*="time" i]');
                             if (timeEls.length > 0) {
                                 time = timeEls[0].textContent.trim();
                             } else {
-                                var timeMatch = el.textContent.match(/\d{1,2}:\d{2}\s*(م|ص|pm|am)?/i);
+                                var timeMatch = el.textContent.match(/\d{1,2}:\d{2}\s*(pm|am)?/i);
                                 if (timeMatch) time = timeMatch[0];
                             }
 
                             var status = "live";
-                            if (el.textContent.includes("انتهت") || el.textContent.includes("ended") || el.textContent.includes("لم تبدأ") || el.textContent.includes("Ended") || el.textContent.includes("Finished")) {
+                            if (el.textContent.includes("Ended") || el.textContent.includes("ended") || el.textContent.includes("Finished") || el.textContent.includes("FT") || el.textContent.includes("HT")) {
                                 status = "waiting";
                             }
 
+                            // 🎯 فك شفرة الأهداف الحقيقية في الـ DOM بصيغة (Number - Number) 🎯
                             var scoreA = "";
                             var scoreB = "";
-                            var scoreEls = el.querySelectorAll('.score, [class*="score" i]');
-                            if (scoreEls.length >= 2) {
-                                scoreA = scoreEls[0].textContent.trim();
-                                scoreB = scoreEls[1].textContent.trim();
-                            } else {
-                                var numbers = el.textContent.match(/\d+\s*-\s*\d+/);
-                                if (numbers) {
-                                    var parts = numbers[0].split('-');
-                                    scoreA = parts[0].trim();
-                                    scoreB = parts[1].trim();
-                                }
+                            var scoreMatch = el.textContent.match(/(\d+)\s*-\s*(\d+)/);
+                            if (scoreMatch) {
+                                scoreA = scoreMatch[1];
+                                scoreB = scoreMatch[2];
                             }
 
-                            // سحب القناة والملعب والمعلق بدقة فائقة
+                            // سحب القناة والمعلق بدقة
                             var channel = "beIN Sports MAX 1";
-                            var commentator = "معلق اللقاء";
+                            var commentator = "English Commentator";
                             el.querySelectorAll('span, div, p').forEach(function(node) {
                                 if (node.children.length === 0) {
                                     var text = node.textContent.replace(/\s+/g, ' ').trim();
                                     if (text) {
-                                        if (text.toLowerCase().includes('bein') || text.includes('قناة') || text.includes('الكأس') || text.toLowerCase().includes('sport')) {
+                                        if (text.toLowerCase().includes('bein') || text.toLowerCase().includes('sport') || text.toLowerCase().includes('tv') || text.toLowerCase().includes('channel')) {
                                             channel = text;
-                                        } else if (text.includes('معلق') || text.includes('بصوت') || (text.length > 4 && text.length < 20 && !text.includes(':') && !text.includes('م') && !text.includes('ص') && text !== league && text !== nameA && text !== nameB)) {
+                                        } else if (text.toLowerCase().includes('commentator') || text.toLowerCase().includes('voice') || (text.length > 5 && text.length < 20 && !text.includes(':') && !/\d/.test(text) && text !== league && text !== nameA && text !== nameB)) {
                                             commentator = text;
                                         }
                                     }
@@ -957,16 +959,16 @@
                                 if (keys.includes('player') || keys.includes('name') || keys.includes('number')) {
                                     // صياغة مسطحة لأسماء اللاعبين وأرقام قمصانهم ومواقعهم
                                     return arr.map(function(p) {
-                                        var name = p.name_ar || p.name || (p.player ? (p.player.name_ar || p.player.name) : "لاعب");
+                                        var name = p.name_en || p.name || (p.player ? (p.player.name_en || p.player.name) : "Player");
                                         var number = p.shirt_number || p.number || "";
-                                        var pos = p.position || p.position_ar || "";
+                                        var pos = p.position || p.position_en || "";
                                         
                                         var posText = "";
                                         if (pos) {
-                                            if (pos.toLowerCase().includes('gk') || pos.includes('حارس')) posText = " [حارس]";
-                                            else if (pos.toLowerCase().includes('df') || pos.includes('مدافع')) posText = " [مدافع]";
-                                            else if (pos.toLowerCase().includes('mf') || pos.includes('وسط')) posText = " [وسط]";
-                                            else if (pos.toLowerCase().includes('fw') || pos.includes('هجوم')) posText = " [مهاجم]";
+                                            if (pos.toLowerCase().includes('gk') || pos.includes('GK')) posText = " [Goalkeeper]";
+                                            else if (pos.toLowerCase().includes('df') || pos.includes('DF')) posText = " [Defender]";
+                                            else if (pos.toLowerCase().includes('mf') || pos.includes('MF')) posText = " [Midfielder]";
+                                            else if (pos.toLowerCase().includes('fw') || pos.includes('FW')) posText = " [Forward]";
                                         }
 
                                         return (number ? `(${number}) ` : "") + name + posText;
@@ -985,7 +987,7 @@
                 var items = container.querySelectorAll('li, tr, [class*="player"]');
                 items.forEach(function(item) {
                     var name = item.textContent.replace(/\s+/g, ' ').trim();
-                    if (name && name.length > 2 && name.length < 40 && !name.includes("Coach") && !name.includes("مدرب")) {
+                    if (name && name.length > 2 && name.length < 40 && !name.includes("Coach") && !name.includes("Manager")) {
                         players.push(name);
                     }
                 });
@@ -1005,7 +1007,7 @@
 
             // تشكيلة افتراضية في حال تعذر السحب
             function useDefaultLineups(message) {
-                var text = message || "📋 التشكيلة الرسمية غير متاحة حالياً على السيرفر.";
+                var text = message || "📋 Official lineup is not available yet.";
                 document.getElementById('team-a-list').innerHTML = `<li>⚠️ ${text}</li>`;
                 document.getElementById('team-b-list').innerHTML = `<li>⚠️ ${text}</li>`;
             }
