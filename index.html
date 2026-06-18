@@ -13,7 +13,16 @@
         <style>
             :root {
                 --primary: #421480;
-                --primary-gradient: linear-gradient(135deg, #2e0d5e 0%, #421480 100%);
+                --primary-gradient: linear-gradient(135deg, #2e0d5e 0%, #42            .match-time { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 3px; }
+            
+            /* تنسيقات الأهداف الحية والنتائج النهائية */
+            .match-score-live { font-size: 20px; font-weight: 800; color: #00ff88; letter-spacing: 2px; }
+            .match-score-final { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; }
+            .match-minute-badge { background: rgba(0, 255, 136, 0.15); color: #00ff88; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px; display: inline-block; }
+            .match-status-ended { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+            .match-meta {
+                border-top: 1px solid rgba(255,255,21480 100%);
                 --bg-dark: #070708;
                 --card-bg: #111115;
                 --border-color: rgba(255, 255, 255, 0.06);
@@ -51,7 +60,43 @@
             .container {
                 max-width: 1100px;
                 margin: 0 auto;
-                padding: 15px;
+                padding: 1555,0.03); padding-top: 8px; margin-top: 10px;
+                display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);
+            }
+
+            .btn-watch {
+                display: block; width: 100%; text-align: center; background: var(--primary-gradient);
+                color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 12px;
+                font-weight: bold; margin-top: 12px; border: none; cursor: pointer; transition: opacity 0.2s;
+            }
+            .btn-watch:hover { opacity: 0.9; }
+
+            /* حالة عدم وجود مباريات بشكل منظم */
+            .empty-state {
+                grid-column: 1 / -1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 40px 20px;
+                border-radius: 12px;
+                border: 1px dashed var(--border-color);
+                color: var(--text-muted);
+                font-size: 13px;
+                background: #0b0b0e;
+            }
+
+            @media (max-width: 768px) {
+                .custom-video-logo { right: 2.1% !important; top: 0.1% !important; width: 18% !important; }
+            }
+        </style>
+    </head>
+    <body>
+        
+        <header>
+            <h1>الوزير سبورت - Elwazer Sports</h1>
+        </px;
             }
 
             /* قسم المشغل المغلق افتراضياً ويفتح عند اختيار مباراة */
@@ -78,7 +123,25 @@
                 align-items: center;
                 background: #07070a;
                 padding: 10px 15px;
-                border-bottom: 1px solid var(--border-color);
+header>
+
+        <div class="container">
+            
+            <!-- 🎯 قسم مشغل البث التفاعلي 🎯 -->
+            <div id="live-section" class="live-section">
+                <!-- شريط التحكم والمغادرة -->
+                <div class="player-top-bar">
+                    <span class="player-title" id="player-status-title">📡 بث حي ومباشر الآن</span>
+                    <button class="player-control-btn close-btn" onclick="closeLiveSection()">
+                        ❌ إغلاق البث والرجوع للرئيسية
+                    </button>
+                </div>
+
+                <div class="player-container">
+                    <div class="player-wrapper">
+                        
+                        <button class="embed-btn" onclick="window.location.reload();">
+                            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.9                border-bottom: 1px solid var(--border-color);
             }
             .player-title {
                 font-size: 13px;
@@ -95,7 +158,8 @@
                 border-radius: 6px;
                 cursor: pointer;
                 display: inline-flex;
-                align-items: center;
+                align-items: center9 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                            تحديث المش;
                 gap: 5px;
                 font-size: 11px;
                 transition: background 0.2s;
@@ -107,7 +171,15 @@
             .player-control-btn.close-btn {
                 background: rgba(255, 59, 48, 0.15);
                 border-color: rgba(255, 59, 48, 0.3);
-                color: #ff3b30;
+                color: #ff3غل
+                        </button>
+
+                        <div id="clappr-player"></div>
+
+                        <img src="logo.png" class="custom-video-logo" id="custom-logo" alt="Logo">
+
+                        <div id="offline-overlay" class="offline-overlay">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10b30;
                 font-weight: bold;
             }
             .player-control-btn.close-btn:hover {
@@ -169,7 +241,25 @@
                 font-size: 11px;
                 font-weight: bold;
                 background: rgba(255, 255, 255, 0.03);
-                border: 1px solid var(--border-color);
+                border: 1px 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                            <div class="offline-title" id="offline-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">البث متوقف مؤقتاً</div>
+                            <div class="offline-subtitle" style="font-size: 13px; color: rgba(255,255,255,0.6); max-width: 320px; line-height: 1.5;">هذه القناة غير مضافة حالياً أو أن البث متوقف مؤقتاً. يرجى تجربة السيرفرات الأخرى.</div>
+                        </div>
+
+                        <div id="unmute-overlay" class="unmute-overlay" onclick="unmutePlayer()">
+                            <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.16 6.07-5.14 7.03c1.92-.61 3.44-2.13 4.05-4.05C18.42 13.93 19 12.82 19 12zm-8.81 7.19L5.35 14H2v-4h3.35l4.84-5.19C10.74 4.26 11.5 4.61 11.5 5.3v13.4c0 .69-.76 1.04-1.31.49z"/></svg>
+                            إلغاء الكتم وتفعيل الصوت
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- السيرفرات والقنوات الأربعة الخاصة بك مدمجة مباشرة أسفل مشغل كل مباراة -->
+                <div class="player-servers-container">
+                    <span class="server-label">📺 اختر سيرفر البث الخاص بك لتشغيل اللقاء:</span>
+                    <div class="servers-row">
+                        <button class="server-tab-btn active" onclick="switchServer('https://live.kooran53.cfd/goolato3_480/index.m3u8', this)">Server 1</button>
+                        <button class solid var(--border-color);
                 color: var(--text-muted);
                 border-radius: 8px;
                 cursor: pointer;
@@ -187,7 +277,38 @@
             /* زر تفعيل الصوت التفاعلي المطور للتغلب على حماية المتصفحات */
             .unmute-overlay {
                 position: absolute;
-                top: 50%;
+                top: 50%;="server-tab-btn" onclick="switchServer('https://2cup.s3.us-east-2.amazonaws.com/max2/max2_720p/index.m3u8', this)">Server 2</button>
+                        <button class="server-tab-btn" onclick="switchServer('#', this)">Server 3</button>
+                        <button class="server-tab-btn" onclick="switchServer('#', this)">Server 4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول مباريات اليوم المباشر -->
+            <div class="section-title">
+                <!-- تم مسح الجملة الإضافية تماماً بناءً على طلبك وتصفية الهيدر كلياً -->
+                <span>📅 جدول مباريات اليوم</span>
+                <button class="player-control-btn" onclick="loadMatchesFromSofascore(false)" style="padding: 4px 10px; font-size: 10px;">
+                    🔄 تحديث جدول المباريات
+                </button>
+            </div>
+
+            <!-- أزرار تبديل الأيام (أمس، اليوم، غداً) مع إظهار التواريخ حية بجانبها -->
+            <div class="date-tabs-container">
+                <button class="date-tab-btn" id="date-btn-yesterday" onclick="changeDateOffset(-1, this)">⬅️ مباريات الأمس</button>
+                <button class="date-tab-btn active" id="date-btn-today" onclick="changeDateOffset(0, this)">📅 مباريات اليوم</button>
+                <button class="date-tab-btn" id="date-btn-tomorrow" onclick="changeDateOffset(1, this)">مباريات الغد ➡️</button>
+            </div>
+
+            <div class="matches-grid" id="matches-container">
+                <!-- جاري جلب المباريات برمجياً -->
+            </div>
+
+        </div>
+
+        <script>
+            var player = null;
+            var current
                 left: 50%;
                 transform: translate(-50%, -50%);
                 z-index: 9999999 !important;
@@ -228,7 +349,7 @@
             }
             .offline-overlay svg { width: 55px; height: 55px; fill: #ff3b30; margin-bottom: 15px; }
 
-            /* 🎯 تنسيق شريط تبديل أيام المباريات المطور 🎯 */
+            /* 🎯 تنسيق شريط تبديل أيام المباريات المطور والمتباعد بشكل مريح للعين 🎯 */
             .date-tabs-container {
                 display: flex;
                 gap: 12px;
@@ -237,7 +358,32 @@
                 flex-wrap: wrap; /* التكيف التلقائي مع شاشات الهواتف لمنع التداخل */
             }
             .date-tab-btn {
-                background: rgba(255, 255, 255, 0.03);
+                background: rgba(255, 255, PlayingUrl = "";
+            var activeDateOffset = 0; // 0 لليوم، -1 للأمس, 1 للغد
+
+            // دالة لحساب وتنسيق تواريخ الأيام الثلاثة بالصيغة العربية (DD-MM-YYYY)
+            function getFormattedDate(offset) {
+                var d = new Date();
+                d.setDate(d.getDate() + offset);
+                var yyyy = d.getFullYear();
+                var mm = String(d.getMonth() + 1).padStart(2, '0');
+                var dd = String(d.getDate()).padStart(2, '0');
+                return `${dd}-${mm}-${yyyy}`;
+            }
+
+            // دالة لحساب التاريخ المقابل لـ Offset بدقة ونقلها لـ YSscores بالصيغة البرمجية القياسية
+            function getOffsetDateString(offset) {
+                var d = new Date();
+                d.setDate(d.getDate() + offset);
+                var yyyy = d.getFullYear();
+                var mm = String(d.getMonth() + 1).padStart(2, '0');
+                var dd = String(d.getDate()).padStart(2, '0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            // وظيفة تبديل الأيام وإعادة شحن الجدول
+            function changeDateOffset(offset, element) {
+                activeDateOffset255, 0.03);
                 border: 1px solid var(--border-color);
                 color: var(--text-muted);
                 padding: 10px 20px;
@@ -264,7 +410,25 @@
 
             /* عنوان قسم جدول المباريات */
             .section-title {
-                font-size: 16px; font-weight: bold; margin: 25px 0 15px; padding-right: 10px;
+                font-size: 16px; font = offset;
+                
+                document.querySelectorAll('.date-tab-btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                element.classList.add('active');
+                
+                loadMatchesFromSofascore(false);
+            }
+            
+            // 🎯 معالج السحب الحصري المباشر من الواجهة البرمجية الرسمية لـ Sofascore 🎯
+            async function loadMatchesFromSofascore(isSilent) {
+                var dateString = getOffsetDateString(activeDateOffset);
+                
+                // 🎯 استخدام الواجهة البرمجية الرسمية لـ Sofascore لضمان سرعة واستقرار كلي 🎯
+                var targetUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${dateString}`;
+                
+                // سيرفرات الوساطة لتخطي قيود جدران الحماية الخارجية
+                var proxies =-weight: bold; margin: 25px 0 15px; padding-right: 10px;
                 border-right: 3px solid #421480; display: flex; align-items: center; justify-content: space-between;
             }
 
@@ -279,7 +443,30 @@
 
             .match-card {
                 background: var(--card-bg);
-                border: 1px solid var(--border-color);
+                border: [
+                    'https://corsproxy.io/?url=',
+                    'https://api.allorigins.win/get?url=',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ];
+
+                var jsonContent = null;
+                var success = false;
+
+                for (var i = 0; i < proxies.length; i++) {
+                    try {
+                        var proxyUrl = proxies[i] + encodeURIComponent(targetUrl);
+                        var response = await fetch(proxyUrl);
+                        if (!response.ok) continue; 
+                        
+                        var rawText = "";
+                        if (proxies[i].includes('allorigins')) {
+                            var json = await response.json();
+                            rawText = json.contents;
+                        } else {
+                            rawText = await response.text();
+                        }
+
+                        if (rawText && rawText. 1px solid var(--border-color);
                 border-radius: 12px;
                 padding: 15px;
                 display: flex;
@@ -324,7 +511,60 @@
             .match-score-live { font-size: 20px; font-weight: 800; color: #00ff88; letter-spacing: 2px; }
             .match-score-final { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; }
             .match-minute-badge { background: rgba(0, 255, 136, 0.15); color: #00ff88; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px; display: inline-block; }
-            .match-status-ended { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+            .match-status-ended { font-size: 10px;trim().length > 50) {
+                            jsonContent = JSON.parse(rawText);
+                            if (jsonContent && jsonContent.events && jsonContent.events.length > 0) {
+                                success = true;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`سيرفر الوساطة ${i + 1} لم ينجح:`, e.message);
+                    }
+                }
+
+                if (!success) {
+                    renderMatches([]); 
+                    return;
+                }
+
+                try {
+                    var matchesList = [];
+                    var events = jsonContent.events;
+
+                    // ترتيب وتصنيف المباريات لتظهر البطولات الكبرى دائماً في مقدمة الجدول
+                    var majorTournaments = ["World Cup", "FIFA World Cup", "Champions League", "UEFA Champions League", "Premier League", "LaLiga", "Serie A", "Bundesliga", "Ligue 1", "Botola Pro", "Saudi Pro League"];
+                    
+                    events.sort(function(a, b) {
+                        var nameA = (a.tournament && a.tournament.name) || "";
+                        var nameB = (b.tournament && b.tournament.name) || "";
+                        
+                        var isMajorA = majorTournaments.some(function(t) { return nameA.toLowerCase().includes(t.toLowerCase()); });
+                        var isMajorB = majorTournaments.some(function(t) { return nameB.toLowerCase().includes(t.toLowerCase()); });
+                        
+                        if (isMajorA && !isMajorB) return -1;
+                        if (!isMajorA && isMajorB) return 1;
+                        return 0;
+                    });
+
+                    // جلب وتصفية أهم 50 مباراة لليوم لضمان استقرار وتجاوب واجهة العرض
+                    var maxMatches = Math.min(events.length, 50);
+                    for (var index = 0; index < maxMatches; index++) {
+                        var item = events[index];
+                        
+                        var league = (item.tournament && item.tournament.name) ? item.tournament.name : "International Match";
+                        var nameA = (item.homeTeam && item.homeTeam.name) ? item.homeTeam.name : "Team A";
+                        var nameB = (item.awayTeam && item.awayTeam.name) ? item.awayTeam.name : "Team B";
+                        
+                        // جلب الشعارات بجودة فائقة ونقاء كلي مباشرة عبر خوادم Sofascore الرسمية
+                        var logoA = item.homeTeam ? `https://api.sofascore.com/api/v1/team/${item.homeTeam.id}/image` : "https://placehold.co/45";
+                        var logoB = item.awayTeam ? `https://api.sofascore.com/api/v1/team/${item.awayTeam.id}/image` : "https://placehold.co/45";
+                        
+                        // قراءة وعرض النتيجة الحية والنهائية بدقة متناهية
+                        var scoreA = "";
+                        var scoreB = "";
+                        if (item.homeScore && item.homeScore.current !== undefined) {
+                            score color: var(--text-muted); margin-top: 4px; }
 
             .match-meta {
                 border-top: 1px solid rgba(255,255,255,0.03); padding-top: 8px; margin-top: 10px;
@@ -333,7 +573,18 @@
 
             .btn-watch {
                 display: block; width: 100%; text-align: center; background: var(--primary-gradient);
-                color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 12px;
+                color: #fff; text-decoration: none; padding: 10A = item.homeScore.current;
+                        }
+                        if (item.awayScore && item.awayScore.current !== undefined) {
+                            scoreB = item.awayScore.current;
+                        }
+
+                        // تحويل الوقت الفعلي بشكل محلي يتناسب مع منطقتك الزمنية تلقائياً
+                        var matchTime = "09:00 PM";
+                        if (item.startTimestamp) {
+                            var dateObj = new Date(item.startTimestamp * 1000);
+                            var hours = dateObj.getHours();
+                            var minutes = String(dateObjpx; border-radius: 8px; font-size: 12px;
                 font-weight: bold; margin-top: 12px; border: none; cursor: pointer; transition: opacity 0.2s;
             }
             .btn-watch:hover { opacity: 0.9; }
@@ -381,13 +632,91 @@
                     <div class="player-wrapper">
                         
                         <button class="embed-btn" onclick="window.location.reload();">
-                            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                            <svg viewBox="0 0 24 24" style="width: 14px; height: .getMinutes()).padStart(2, '0');
+                            var ampm = hours >= 12 ? 'PM' : 'AM';
+                            var hours12 = hours % 12 || 12;
+                            matchTime = `${String(hours12).padStart(2, '0')}:${minutes} ${ampm}`;
+                        }
+
+                        // تحديد حالة اللقاء والملعب والدقائق
+                        var status = "waiting";
+                        var minute = "";
+                        if (item.status) {
+                            var type = item.status.type || "";
+                            var desc = item.status.description || "";
+                            
+                            if (type === 'inprogress' || desc.toLowerCase().includes('half') || desc.toLowerCase().includes('min')) {
+                                status = "live";
+                                minute = desc;
+                            } else if (type === 'finished' || desc.toLowerCase().includes('ended') || desc.toLowerCase().includes('ft')) {
+                                status = "ended";
+                            }
+                        }
+
+                        matchesList.push({
+                            id: index + 1,
+                            league: league,
+                            status: status,
+                            teamA: { name: nameA, logo: logoA },
+                            teamB: { name: nameB, logo: logoB },
+                            time: matchTime,
+                            scoreA: scoreA,
+                            scoreB: scoreB,
+                            minute: minute,
+                            channel: "beIN Sports MAX 1"
+                        });
+                    }
+
+                    renderMatches(matchesList);
+
+                } catch (err) {
+                    console.error("Error parsing Sofascore API JSON:", err);
+                    renderMatches([]);
+                }
+            }
+
+            // عرض الكروت في الواجهة مع النتائج الحية وال14px; fill: currentColor;"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                             تحديث المشغل
                         </button>
 
                         <div id="clappr-player"></div>
 
-                        <img src="logo.png" class="custom-video-logo" id="custom-logo" alt="Logo">
+                        <img src="logo.png" class="custom-video-logo" id="customبطولات الحقيقية (بدون معلق)
+            function renderMatches(list) {
+                var container = document.getElementById('matches-container');
+                container.innerHTML = "";
+
+                if (list.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            📡 لا توجد مباريات حية معروضة حالياً من المصدر لهذا اليوم، أو أن خوادم الموقع محجوبة مؤقتاً.
+                            <button class="player-control-btn" onclick="loadMatchesFromSofascore(false)" style="margin-top: 15px; background: var(--primary-gradient);">🔄 إعادة المحاولة والتحميل</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.forEach(function(match) {
+                    var statusClass = 'status-waiting';
+                    var statusText = 'لم تبدأ';
+                    if (match.status === 'live') {
+                        statusClass = 'status-live';
+                        statusText = '● مباشر الآن';
+                    } else if (match.status === 'ended') {
+                        statusClass = 'status-ended';
+                        statusText = 'انتهت';
+                    }
+
+                    // تشكيل العمود الأوسط لعرض النتائج الحية والأهداف تلقائياً
+                    var centerHtml = "";
+                    if (match.status === 'live') {
+                        centerHtml = `
+                            <div class="match-time-info">
+                                <div class="match-score-live">${match.scoreA} - ${match.scoreB}</div>
+                                <div class="match-minute-badge">🔥 دقيقة ${match.minute || 'الآن'}</div>
+                            </div>
+                        `;
+-logo" alt="Logo">
 
                         <div id="offline-overlay" class="offline-overlay">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
@@ -395,7 +724,43 @@
                             <div class="offline-subtitle" style="font-size: 13px; color: rgba(255,255,255,0.6); max-width: 320px; line-height: 1.5;">هذه القناة غير مضافة حالياً أو أن البث متوقف مؤقتاً. يرجى تجربة السيرفرات الأخرى.</div>
                         </div>
 
-                        <div id="unmute-overlay" class="unmute-overlay" onclick="unmutePlayer()">
+                        <div id="unmute-overlay" class="unmute-overlay                    } else if (match.status === 'ended') {
+                        centerHtml = `
+                            <div class="match-time-info">
+                                <div class="match-score-final">${match.scoreA} - ${match.scoreB}</div>
+                                <div class="match-status-ended">انتهت المباراة</div>
+                            </div>
+                        `;
+                    } else {
+                        centerHtml = `
+                            <div class="match-time-info">
+                                <div class="match-time">${match.time}</div>
+                                <span>توقيت اللقاء</span>
+                            </div>
+                        `;
+                    }
+
+                    var btnText = match.status === 'live' ? 'شاهد البث المباشر 📡' : 'تفاصيل المباراة 📊';
+
+                    var html = `
+                        <div class="match-card" onclick="selectMatch(${JSON.stringify(match).replace(/"/g, '&quot;')})">
+                            <div class="match-league">
+                                <span>🏆 ${match.league}</span>
+                                <span class="match-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="match-teams">
+                                <div class="team-col">
+                                    <img class="team-logo" src="${match.teamA.logo}" alt="${match.teamA.name}">
+                                    <span class="team-name">${match.teamA.name}</span>
+                                </div>
+                                ${centerHtml}
+                                <div class="team-col">
+                                    <img class="team-logo" src="${match.teamB.logo}" alt="${match.teamB.name}">
+                                    <span class="team-name">${match.teamB.name}</span>
+                                </div>
+                            </div>
+                            <div class="match-meta">
+                                <span>📺 ${match.channel}" onclick="unmutePlayer()">
                             <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.16 6.07-5.14 7.03c1.92-.61 3.44-2.13 4.05-4.05C18.42 13.93 19 12.82 19 12zm-8.81 7.19L5.35 14H2v-4h3.35l4.84-5.19C10.74 4.26 11.5 4.61 11.5 5.3v13.4c0 .69-.76 1.04-1.31.49z"/></svg>
                             إلغاء الكتم وتفعيل الصوت
                         </div>
@@ -420,7 +785,32 @@
                 <!-- تم مسح الجملة الإضافية تماماً بناءً على طلبك وتصفية الهيدر -->
                 <span>📅 جدول مباريات اليوم</span>
                 <button class="player-control-btn" onclick="loadMatchesFromYSscores(false)" style="padding: 4px 10px; font-size: 10px;">
-                    🔄 تحديث جدول المباريات
+                    🔄 تحد</span>
+                            </div>
+                            <button class="btn-watch">${btnText}</button>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            }
+
+            // اختيار مباراة وتشغيل السيرفر الأول
+            function selectMatch(match) {
+                var liveSection = document.getElementById('live-section');
+                liveSection.style.display = 'block';
+                liveSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                document.getElementById('player-status-title').innerText = "📡 مباراة: " + match.teamA.name + " ضد " + match.teamB.name;
+
+                // إعادة تفعيل السيرفر الأول كخيار افتراضي عند فتح اللقاء
+                var defaultServerBtn = document.querySelector('.server-tab-btn');
+                var defaultUrl = "https://live.kooran53.cfd/goolato3_480/index.m3u8";
+                
+                // إعادة تهيئة تظليل الأزرار
+                document.querySelectorAll('.server-tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+                if (defaultServerBtn) defaultServerBtn.classList.add('active');
+
+                يث جدول المباريات
                 </button>
             </div>
 
@@ -431,7 +821,36 @@
                 <button class="date-tab-btn" id="date-btn-tomorrow" onclick="changeDateOffset(1, this)">مباريات الغد ➡️</button>
             </div>
 
-            <div class="matches-grid" id="matches-container">
+            <loadStream(defaultUrl);
+            }
+
+            // تشغيل السيرفرات الأربعة لتبديل السورس
+            function switchServer(url, btnElement) {
+                document.querySelectorAll('.server-tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+                btnElement.classList.add('active');
+                loadStream(url);
+            }
+
+            // تحميل البث داخل Clappr
+            function loadStream(url) {
+                currentPlayingUrl = url;
+
+                var offlineOverlay = document.getElementById('offline-overlay');
+                var unmuteOverlay = document.getElementById('unmute-overlay');
+
+                if (player) {
+                    player.destroy();
+                }
+
+                if (!url || url === '#' || url === '') {
+                    offlineOverlay.style.display = 'flex';
+                    unmuteOverlay.style.display = 'none';
+                } else {
+                    offlineOverlay.style.display = 'none';
+                    
+                    player = new Clappr.Player({
+                        source: url,
+                        parentId: '#clappr-div class="matches-grid" id="matches-container">
                 <!-- جاري جلب المباريات برمجياً -->
             </div>
 
@@ -474,18 +893,116 @@
                 loadMatchesFromYSscores(false);
             }
             
-            // 🎯 معالج السحب الحصري لجدول المباريات الحية من موقع YSscores بالتاريخ الحقيقي والدقيق 🎯
+            // 🎯 معالج السحب لجدول المباريات الحية من موقع YSscores بالتاريخ الحقيقي والدقيق 🎯
             async function loadMatchesFromYSscores(isSilent) {
-                var dateString = getOffsetDateString(activeDateOffset);
+                varplayer',
+                        width: '100%',
+                        height: '100%',
+                        autoPlay: true,
+                        mute: true,
+                        preload: 'auto',
+                        stretching: 'exactfit',
+                        playback: {
+                            playInline: true,
+                            recycleVideo: true,
+                            hlsMinimumjsversion: '0.12.0',
+                            hlsjsConfig: {
+                                enableWorker: true,
+                                lowLatencyMode: true,
+                                maxBufferLength: 12,
+                                liveBackBufferLength: 0,
+                                manifestLoadingMaxRetry: 10,
+                                levelLoadingMaxRetry: 10
+                            }
+                        }
+                    });
+
+                    player.on(Clappr.Events.PLAYER_READY, function() {
+                        injectOverlays();
+                        player.unmute();
+                        setTimeout(function() {
+                            var volumePlugin = player.getPlugin('volume');
+                            if (player.getVolume() === 0 || (volumePlugin && volumePlugin.$el.hasClass('muted'))) {
+                                document.getElementById('unmute-overlay').style.display = 'flex';
+                            }
+                        }, 600);
+                    });
+
+                    player.on(Clappr.Events.CORE_CONTAINERS_CREATED, function() {
+                        injectOverlays();
+                    });
+
+                    player.on(Clappr.Events.PLAYER_PLAY, function() {
+                        document.getElementById('offline-overlay').style.display = 'none';
+                    });
+
+                    player.on(Clappr.Events.CORE_FULLSCREEN, function(isCurrentlyFullscreen) {
+                        var logo = document.getElementById('custom-logo');
+                        if (logo) {
+                            if (isCurrentlyFullscreen) {
+                                logo.style.setProperty('right', '4.5%', 'important');
+                            } else {
+                                logo.style.setProperty('right', '2.1%', 'important');
+                            }
+                        }
+                    });
+
+                    player.on(Clappr.Events.PLAYER_ERROR dateString = getOffsetDateString(activeDateOffset);
                 
-                // 🎯 تصحيح مسار السحب الحتمي ليتصل بـ الصفحة الرئيسية المباشرة en/ مع معاملات التاريخ ?date بدقة تامة وبأبعاد صحيحة 🎯
+                // 🎯 استخدام مسار الصفحة الرئيسية الصحيح en/ مع معاملات التاريخ ?date لضمان عمل الفلترة بنسبة 100% وبدون 404 🎯
                 var targetUrls = [
                     `https://www.ysscores.com/en/?date=${dateString}`,
                     `https://www.ysscores.com/?date=${dateString}`
                 ];
                 
                 // قائمة السيرفرات الوسيطة (Proxies) المفتوحة والمتاحة لتخطي الحماية
-                var proxies = [
+                var proxies =, function() {
+                        offlineOverlay.style.display = 'flex';
+                        unmuteOverlay.style.display = 'none';
+
+                        setTimeout(function() {
+                            if (currentPlayingUrl && currentPlayingUrl !== '#') {
+                                player.load(currentPlayingUrl);
+                                player.play();
+                            }
+                        }, 5000);
+                    });
+                }
+            }
+
+            // إغلاق البث والرجوع للرئيسية
+            function closeLiveSection() {
+                var liveSection = document.getElementById('live-section');
+                liveSection.style.display = 'none';
+                
+                if (player) {
+                    player.destroy();
+                    player = null;
+                }
+                
+                document.getElementById('matches-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function unmutePlayer() {
+                if (player) {
+                    player.unmute();
+                    player.setVolume(100);
+                }
+                document.getElementById('unmute-overlay').style.display = 'none';
+            }
+
+            document.body.addEventListener('click', function() {
+                var unmuteOverlay = document.getElementById('unmute-overlay');
+                if (unmuteOverlay.style.display === 'flex') {
+                    unmutePlayer();
+                }
+            }, { once: true });
+
+            function injectOverlays() {
+                if (player && player.core && player.core.el) {
+                    var clapprContainer = player.core.el;
+                    var logo = document.getElementById('custom-logo');
+                    var unmute = document. [
                     'https://corsproxy.io/?url=',
                     'https://api.allorigins.win/get?url=',
                     'https://api.codetabs.com/v1/proxy?quest='
@@ -538,446 +1055,7 @@
                             var jsonData = JSON.parse(nextDataEl.textContent);
                             var rawMatches = findMatchesArray(jsonData);
                             
-                            if (rawMatches && rawMatches.length > 0) {
-                                rawMatches.forEach(function(item, index) {
-                                    var league = item.championship_name_en || item.championship_name || (item.championship ? (item.championship.name_en || item.championship.name) : "International Match");
-                                    var nameA = item.home_team_name_en || item.home_team_name || (item.home_team ? (item.home_team.name_en || item.home_team.name) : "Team A");
-                                    var nameB = item.away_team_name_en || item.away_team_name || (item.away_team ? (item.away_team.name_en || item.away_team.name) : "Team B");
-                                    var logoA = item.home_team_logo || (item.home_team ? item.home_team.logo : "https://placehold.co/45");
-                                    var logoB = item.away_team_logo || (item.away_team ? item.away_team.logo : "https://placehold.co/45");
-                                    var time = item.time || item.match_time || "09:00 PM";
-                                    
-                                    // جلب الأهداف الحية والنتيجة الحالية بشكل فوري وديناميكي
-                                    var scoreA = item.home_score !== undefined ? item.home_score : (item.home_team_score !== undefined ? item.home_team_score : "");
-                                    var scoreB = item.away_score !== undefined ? item.away_score : (item.away_team_score !== undefined ? item.away_team_score : "");
-                                    var minute = item.minute || item.match_minute || "";
-
-                                    // تحديد الحالة الدقيقة للقاء
-                                    var status = "waiting";
-                                    if (item.status === 'live' || item.is_live || item.status === 'LIVE' || item.status_name === 'live') {
-                                        status = "live";
-                                    } else if (item.status === 'finished' || item.status === 'ended' || item.status === 'FINISHED' || item.status === 'FT' || item.status_name === 'ended') {
-                                        status = "ended";
-                                    }
-
-                                    var channel = "beIN Sports MAX 1";
-                                    if (item.channels && item.channels.length > 0) {
-                                        channel = item.channels[0].name_en || item.channels[0].name || channel;
-                                    } else if (item.tv_channels) {
-                                        channel = item.tv_channels;
-                                    }
-
-                                    // تصحيح الروابط النسبية
-                                    if (logoA && logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
-                                    if (logoB && logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
-
-                                    var matchSlug = item.slug || item.id || "";
-                                    var matchPageUrl = matchSlug ? `https://www.ysscores.com/en/match/${matchSlug}` : "";
-
-                                    matchesList.push({
-                                        id: index + 1,
-                                        league: league,
-                                        status: status,
-                                        teamA: { name: nameA, logo: logoA },
-                                        teamB: { name: nameB, logo: logoB },
-                                        time: time,
-                                        scoreA: scoreA,
-                                        scoreB: scoreB,
-                                        minute: minute,
-                                        channel: channel,
-                                        matchUrl: matchPageUrl
-                                    });
-                                });
-                            }
-                        } catch (e) {
-                            console.warn("Next.js Parsing failed, falling back to DOM:", e);
-                        }
-                    }
-
-                    // 2. معالج الـ DOM الاحتياطي في حال عدم العثور على Next JSON أو لضمان استقرار السحب المطلق
-                    if (matchesList.length === 0) {
-                        var matchBoxes = doc.querySelectorAll('a[href*="/match/"], [class*="match-card"], [class*="match_card"], .match-row');
-                        
-                        matchBoxes.forEach(function(el, index) {
-                            var logoA = "https://placehold.co/45";
-                            var logoB = "https://placehold.co/45";
-                            var nameA = "Team A";
-                            var nameB = "Team B";
-
-                            var imgs = el.querySelectorAll('img');
-                            if (imgs.length >= 2) {
-                                logoA = imgs[0].src;
-                                logoB = imgs[1].src;
-                                
-                                // 🎯 قراءة وتثبيت أسماء الفرق الإنجليزية لـ Team A و Team B برمجياً وبدقة 100% 🎯
-                                var parentA = imgs[0].parentElement;
-                                var parentB = imgs[1].parentElement;
-                                if (parentA) {
-                                    var txtA = parentA.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
-                                    if (txtA && txtA.length > 1) {
-                                        nameA = txtA;
-                                    } else if (parentA.parentElement) {
-                                        var txtGP_A = parentA.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
-                                        if (txtGP_A && txtGP_A.length > 1) nameA = txtGP_A;
-                                    }
-                                }
-                                if (parentB) {
-                                    var txtB = parentB.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
-                                    if (txtB && txtB.length > 1) {
-                                        nameB = txtB;
-                                    } else if (parentB.parentElement) {
-                                        var txtGP_B = parentB.parentElement.textContent.replace(/\s+/g, ' ').replace(/\d+:\d+/g, '').replace(/[\d]/g, '').trim();
-                                        if (txtGP_B && txtGP_B.length > 1) {
-                                            nameB = txtGP_B; // 🎯 تم تصحيح الـ Typo هنا بنجاح ليقرأ اسم الفريق الثاني بدقة 100% 🎯
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (logoA.startsWith('/')) logoA = 'https://www.ysscores.com' + logoA;
-                            if (logoB.startsWith('/')) logoB = 'https://www.ysscores.com' + logoB;
-
-                            // سحب البطولة الحقيقية بالصعود التكراري في الـ Ancestors
-                            var league = "International Match";
-                            var current = el;
-                            while (current && current !== doc.body) {
-                                var titleEl = current.querySelector('[class*="championship" i], [class*="tournament" i], [class*="title" i], h2, h3');
-                                if (titleEl && titleEl.textContent.trim().length > 3) {
-                                    league = titleEl.textContent.trim();
-                                    break;
-                                }
-                                var prev = current.previousElementSibling;
-                                while (prev) {
-                                    var headerEl = prev.querySelector('h2, h3, [class*="title" i], [class*="header" i]');
-                                    if (!headerEl && (prev.tagName === 'H2' || prev.tagName === 'H3' || prev.className.toLowerCase().includes('title'))) {
-                                        headerEl = prev;
-                                    }
-                                    if (headerEl && headerEl.textContent.trim().length > 3) {
-                                        league = headerEl.textContent.trim();
-                                        break;
-                                    }
-                                    prev = prev.previousElementSibling;
-                                }
-                                if (league !== "International Match") break;
-                                current = current.parentElement;
-                            }
-                            league = league.replace(/\s+/g, ' ').trim();
-
-                            // سحب التوقيت والنتائج الفعلية
-                            var time = "09:00 PM";
-                            var timeEls = el.querySelectorAll('.match-time, .time-match, .time, .match_time, [class*="time" i]');
-                            if (timeEls.length > 0) {
-                                time = timeEls[0].textContent.trim();
-                            } else {
-                                var timeMatch = el.textContent.match(/\d{1,2}:\d{2}\s*(pm|am)?/i);
-                                if (timeMatch) time = timeMatch[0];
-                            }
-
-                            // 🎯 فك شفرة الأهداف الحقيقية في الـ DOM بصيغة (Number - Number) 🎯
-                            var scoreA = "";
-                            var scoreB = "";
-                            var scoreMatch = el.textContent.match(/(\d+)\s*-\s*(\d+)/);
-                            if (scoreMatch) {
-                                scoreA = scoreMatch[1];
-                                scoreB = scoreMatch[2];
-                            }
-
-                            // 🎯 تصحيح محاذاة حالات اللقاء ومنع تداخل الحالات مع "لم تبدأ" 🎯
-                            var status = "waiting"; 
-                            var textLower = el.textContent.toLowerCase();
-                            if (textLower.includes("live") || textLower.includes("playing") || textLower.includes("min") || textLower.includes("'") || el.querySelector('[class*="live" i]')) {
-                                status = "live";
-                            } else if (textLower.includes("ended") || textLower.includes("finished") || textLower.includes("ft") || textLower.includes("ht")) {
-                                status = "ended"; // تم تعيينها كـ انتهت بدلاً من waiting
-                            }
-
-                            // سحب القناة بدقة
-                            var channel = "beIN Sports MAX 1";
-                            el.querySelectorAll('span, div, p').forEach(function(node) {
-                                if (node.children.length === 0) {
-                                    var text = node.textContent.replace(/\s+/g, ' ').trim();
-                                    if (text) {
-                                        if (text.toLowerCase().includes('bein') || text.toLowerCase().includes('sport') || text.toLowerCase().includes('tv') || text.toLowerCase().includes('channel')) {
-                                            channel = text;
-                                        }
-                                    }
-                                }
-                            });
-
-                            matchesList.push({
-                                id: index + 1,
-                                league: league,
-                                status: status,
-                                teamA: { name: nameA, logo: logoA },
-                                teamB: { name: nameB, logo: logoB },
-                                time: time,
-                                scoreA: scoreA,
-                                scoreB: scoreB,
-                                minute: "",
-                                channel: channel,
-                                matchUrl: el.href || ""
-                            });
-                        });
-                    }
-
-                    renderMatches(matchesList);
-
-                } catch (err) {
-                    console.error("Error processing matches list:", err);
-                }
-            }
-
-            // دالة البحث التكرارية داخل كتل البيانات الخاصة بـ Next.js للعثور على مصفوفة المباريات
-            function findMatchesArray(obj) {
-                if (!obj || typeof obj !== 'object') return null;
-                
-                if (Array.isArray(obj)) {
-                    if (obj.length > 0) {
-                        var item = obj[0];
-                        if (item && typeof item === 'object') {
-                            var keys = Object.keys(item).join(',').toLowerCase();
-                            if ((keys.includes('home_team') || keys.includes('hometeam')) && 
-                                (keys.includes('away_team') || keys.includes('awayteam')) && 
-                                (keys.includes('championship') || keys.includes('league'))) {
-                                return obj;
-                            }
-                        }
-                    }
-                }
-                
-                for (var key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        var res = findMatchesArray(obj[key]);
-                        if (res) return res;
-                    }
-                }
-                return null;
-            }
-
-            // عرض الكروت في الواجهة مع النتائج الحية والبطولات الحقيقية (بدون معلق)
-            function renderMatches(list) {
-                var container = document.getElementById('matches-container');
-                container.innerHTML = "";
-
-                if (list.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            📡 لا توجد مباريات حية معروضة حالياً من المصدر لهذا اليوم، أو أن خوادم YSscores محجوبة مؤقتاً.
-                            <button class="player-control-btn" onclick="loadMatchesFromYSscores(false)" style="margin-top: 15px; background: var(--primary-gradient);">🔄 إعادة المحاولة والتحميل</button>
-                        </div>
-                    `;
-                    return;
-                }
-
-                list.forEach(function(match) {
-                    var statusClass = 'status-waiting';
-                    var statusText = 'لم تبدأ';
-                    if (match.status === 'live') {
-                        statusClass = 'status-live';
-                        statusText = '● مباشر الآن';
-                    } else if (match.status === 'ended') {
-                        statusClass = 'status-ended';
-                        statusText = 'انتهت';
-                    }
-
-                    // تشكيل العمود الأوسط لعرض النتائج الحية والأهداف تلقائياً
-                    var centerHtml = "";
-                    if (match.status === 'live') {
-                        centerHtml = `
-                            <div class="match-time-info">
-                                <div class="match-score-live">${match.scoreA} - ${match.scoreB}</div>
-                                <div class="match-minute-badge">🔥 دقيقة ${match.minute || 'الآن'}</div>
-                            </div>
-                        `;
-                    } else if (match.status === 'ended') {
-                        centerHtml = `
-                            <div class="match-time-info">
-                                <div class="match-score-final">${match.scoreA} - ${match.scoreB}</div>
-                                <div class="match-status-ended">انتهت المباراة</div>
-                            </div>
-                        `;
-                    } else {
-                        centerHtml = `
-                            <div class="match-time-info">
-                                <div class="match-time">${match.time}</div>
-                                <span>توقيت اللقاء</span>
-                            </div>
-                        `;
-                    }
-
-                    var btnText = match.status === 'live' ? 'شاهد البث المباشر 📡' : 'تفاصيل المباراة 📊';
-
-                    var html = `
-                        <div class="match-card" onclick="selectMatch(${JSON.stringify(match).replace(/"/g, '&quot;')})">
-                            <div class="match-league">
-                                <span>🏆 ${match.league}</span>
-                                <span class="match-status ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="match-teams">
-                                <div class="team-col">
-                                    <img class="team-logo" src="${match.teamA.logo}" alt="${match.teamA.name}">
-                                    <span class="team-name">${match.teamA.name}</span>
-                                </div>
-                                ${centerHtml}
-                                <div class="team-col">
-                                    <img class="team-logo" src="${match.teamB.logo}" alt="${match.teamB.name}">
-                                    <span class="team-name">${match.teamB.name}</span>
-                                </div>
-                            </div>
-                            <div class="match-meta">
-                                <span>📺 ${match.channel}</span>
-                            </div>
-                            <button class="btn-watch">${btnText}</button>
-                        </div>
-                    `;
-                    container.innerHTML += html;
-                });
-            }
-
-            // اختيار مباراة وتشغيل السيرفر الأول
-            function selectMatch(match) {
-                var liveSection = document.getElementById('live-section');
-                liveSection.style.display = 'block';
-                liveSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                document.getElementById('player-status-title').innerText = "📡 مباراة: " + match.teamA.name + " ضد " + match.teamB.name;
-
-                // إعادة تفعيل السيرفر الأول كخيار افتراضي عند فتح اللقاء
-                var defaultServerBtn = document.querySelector('.server-tab-btn');
-                var defaultUrl = "https://live.kooran53.cfd/goolato3_480/index.m3u8";
-                
-                // إعادة تهيئة تظليل الأزرار
-                document.querySelectorAll('.server-tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-                if (defaultServerBtn) defaultServerBtn.classList.add('active');
-
-                loadStream(defaultUrl);
-            }
-
-            // تشغيل السيرفرات الأربعة لتبديل السورس
-            function switchServer(url, btnElement) {
-                document.querySelectorAll('.server-tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-                btnElement.classList.add('active');
-                loadStream(url);
-            }
-
-            // تحميل البث داخل Clappr
-            function loadStream(url) {
-                currentPlayingUrl = url;
-
-                var offlineOverlay = document.getElementById('offline-overlay');
-                var unmuteOverlay = document.getElementById('unmute-overlay');
-
-                if (player) {
-                    player.destroy();
-                }
-
-                if (!url || url === '#' || url === '') {
-                    offlineOverlay.style.display = 'flex';
-                    unmuteOverlay.style.display = 'none';
-                } else {
-                    offlineOverlay.style.display = 'none';
-                    
-                    player = new Clappr.Player({
-                        source: url,
-                        parentId: '#clappr-player',
-                        width: '100%',
-                        height: '100%',
-                        autoPlay: true,
-                        mute: true,
-                        preload: 'auto',
-                        stretching: 'exactfit',
-                        playback: {
-                            playInline: true,
-                            recycleVideo: true,
-                            hlsMinimumjsversion: '0.12.0',
-                            hlsjsConfig: {
-                                enableWorker: true,
-                                lowLatencyMode: true,
-                                maxBufferLength: 12,
-                                liveBackBufferLength: 0,
-                                manifestLoadingMaxRetry: 10,
-                                levelLoadingMaxRetry: 10
-                            }
-                        }
-                    });
-
-                    player.on(Clappr.Events.PLAYER_READY, function() {
-                        injectOverlays();
-                        player.unmute();
-                        setTimeout(function() {
-                            var volumePlugin = player.getPlugin('volume');
-                            if (player.getVolume() === 0 || (volumePlugin && volumePlugin.$el.hasClass('muted'))) {
-                                document.getElementById('unmute-overlay').style.display = 'flex';
-                            }
-                        }, 600);
-                    });
-
-                    player.on(Clappr.Events.CORE_CONTAINERS_CREATED, function() {
-                        injectOverlays();
-                    });
-
-                    player.on(Clappr.Events.PLAYER_PLAY, function() {
-                        document.getElementById('offline-overlay').style.display = 'none';
-                    });
-
-                    player.on(Clappr.Events.CORE_FULLSCREEN, function(isCurrentlyFullscreen) {
-                        var logo = document.getElementById('custom-logo');
-                        if (logo) {
-                            if (isCurrentlyFullscreen) {
-                                logo.style.setProperty('right', '4.5%', 'important');
-                            } else {
-                                logo.style.setProperty('right', '2.1%', 'important');
-                            }
-                        }
-                    });
-
-                    player.on(Clappr.Events.PLAYER_ERROR, function() {
-                        offlineOverlay.style.display = 'flex';
-                        unmuteOverlay.style.display = 'none';
-
-                        setTimeout(function() {
-                            if (currentPlayingUrl && currentPlayingUrl !== '#') {
-                                player.load(currentPlayingUrl);
-                                player.play();
-                            }
-                        }, 5000);
-                    });
-                }
-            }
-
-            // إغلاق البث والرجوع للرئيسية
-            function closeLiveSection() {
-                var liveSection = document.getElementById('live-section');
-                liveSection.style.display = 'none';
-                
-                if (player) {
-                    player.destroy();
-                    player = null;
-                }
-                
-                document.getElementById('matches-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            function unmutePlayer() {
-                if (player) {
-                    player.unmute();
-                    player.setVolume(100);
-                }
-                document.getElementById('unmute-overlay').style.display = 'none';
-            }
-
-            document.body.addEventListener('click', function() {
-                var unmuteOverlay = document.getElementById('unmute-overlay');
-                if (unmuteOverlay.style.display === 'flex') {
-                    unmutePlayer();
-                }
-            }, { once: true });
-
-            function injectOverlays() {
-                if (player && player.core && player.core.el) {
-                    var clapprContainer = player.core.el;
-                    var logo = document.getElementById('custom-logo');
-                    var unmute = document.getElementById('unmute-overlay');
+                            if (rawgetElementById('unmute-overlay');
                     var offline = document.getElementById('offline-overlay');
 
                     if (logo && logo.parentElement !== clapprContainer) {
@@ -986,7 +1064,10 @@
                     if (unmute && unmute.parentElement !== clapprContainer) {
                         clapprContainer.appendChild(unmute);
                     }
-                    if (offline && offline.parentElement !== clapprContainer) {
+                    if (offline && offline.parentElement !== clapprMatches && rawMatches.length > 0) {
+                                rawMatches.forEach(function(item, index) {
+                                    var league = item.championship_name_en || item.championship_name || (item.championship ? (item.championship.name_en || item.championship.name) : "International Match");
+                                    var nameA = item.home_team_name_en || item.home_team_name || (item.home_team ? (item.home_team.name_en || item.home_team.name) : "Team A");Container) {
                         clapprContainer.appendChild(offline);
                     }
                 }
@@ -999,12 +1080,12 @@
                 document.getElementById('date-btn-today').innerHTML = `📅 اليوم (${getFormattedDate(0)})`;
                 document.getElementById('date-btn-tomorrow').innerHTML = `مباريات الغد ➡️ (${getFormattedDate(1)})`;
 
-                loadMatchesFromYSscores(false);
+                loadMatchesFromSofascore(false);
             });
 
             // تحديث صامت وتلقائي للنتائج والأهداف والدقائق في الخلفية كل 60 ثانية
             setInterval(function() {
-                loadMatchesFromYSscores(true);
+                loadMatchesFromSofascore(true);
             }, 60000);
         </script>
     </body>
