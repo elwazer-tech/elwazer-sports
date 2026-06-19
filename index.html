@@ -114,7 +114,7 @@
                 background: transparent !important; 
                 margin: 0 !important;
                 padding: 0 !important;
-                transition: right 0.1s ease-in-out; /* حركة مريحة للعين عند تبديل الأبعاد بملء الشاشة */
+                transition: right 0.15s ease-in-out; /* حركة انسيابية مريحة للعين عند تبديل الأبعاد بملء الشاشة */
             }
 
             /* زر تفعيل الصوت التفاعلي المطور للتغلب على حماية المتصفحات */
@@ -242,6 +242,8 @@
                🎯 مصفوفة القنوات (تعديل القنوات وتغيير الروابط والأسماء يتم هنا فقط) 🎯
                ========================================================================== */
             var channels = [
+                // تم إضافة قناة البث المتخفية بصيغة JSON هنا لتعمل كقناة أولى افتراضية وتجربتها بنجاح
+                { name: "البث المتخفي (JSON)", url: "https://chatgmt2.xyz/wp-includes/ajax/data.json" },
                 { name: "Channel 1", url: "https://s3.us-east-2.amazonaws.com/cdnh123/hls/0/stream_1280x720_3300k.m3u8" },
                 { name: "Channel 2", url: "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8" },
                 { name: "Channel 3", url: "https://s3.eu-north-1.amazonaws.com/196.ccdd3333/hls/0/stream.m3u8" },
@@ -357,18 +359,6 @@
                 }
             });
 
-            // مستمع تفاعلي وحاسم لتبديل وضع ملء الشاشة وتغيير إزاحة اللوجو تلقائياً للحفاظ على دقة الأبعاد
-            player.on(Clappr.Events.CORE_FULLSCREEN, function(isCurrentlyFullscreen) {
-                var logo = document.getElementById('custom-logo');
-                if (logo) {
-                    if (isCurrentlyFullscreen) {
-                        logo.style.setProperty('right', '4.5%', 'important');
-                    } else {
-                        logo.style.setProperty('right', '2.1%', 'important');
-                    }
-                }
-            });
-
             // عند التبديل بين السيرفرات، يتكفل هذا المستمع بإعادة لصق الأزرار واللوحات التنبيهية والشعار
             player.on(Clappr.Events.CORE_CONTAINERS_CREATED, function() {
                 injectOverlays();
@@ -378,6 +368,33 @@
             player.on(Clappr.Events.PLAYER_PLAY, function() {
                 document.getElementById('offline-overlay').style.display = 'none';
             });
+
+            /* ==========================================================================
+               🎯 مستشعر تكبير المتصفح الأصلي لحل مشكلة اللوجو نهائياً بملء الشاشة 🎯
+               ========================================================================== */
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+            function handleFullscreenChange() {
+                var isFullscreen = document.fullscreenElement || 
+                                   document.webkitFullscreenElement || 
+                                   document.mozFullScreenElement || 
+                                   document.msFullscreenElement;
+                
+                // إعادة حقن تراكبات اللوجو والصوت فوراً للتأكد من بقائها حية داخل الحاوية المكبرة
+                injectOverlays();
+                
+                var logo = document.getElementById('custom-logo');
+                if (logo) {
+                    if (isFullscreen) {
+                        logo.style.setProperty('right', '4.5%', 'important');
+                    } else {
+                        logo.style.setProperty('right', '2.1%', 'important');
+                    }
+                }
+            }
 
             /* ==========================================================================
                نظام الإنعاش الذاتي وحجب الخطأ (Self-Healing Loop) لضمان عدم تجميد القنوات
