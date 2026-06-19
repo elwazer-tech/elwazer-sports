@@ -107,14 +107,16 @@
             border-radius: 3px;
         }
 
-        /* ===== بطاقة القناة - أفقية ومتناسقة ===== */
+        /* ===== بطاقة القناة - تمدد مرن وتلقائي حسب طول اسم الفرق ودون قطع ===== */
         .channel-card {
             flex-shrink: 0;
-            width: 230px;
+            width: max-content;             /* تمدد تلقائي حسب طول النصوص المكتوبة */
+            min-width: 230px;               /* حد أدنى للعرض لحفظ التنسيق */
+            max-width: 320px;               /* حد أقصى لمنع تمدد الكرت بشكل مبالغ فيه */
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 10px 13px;
+            padding: 10px 14px;
             cursor: pointer;
             transition: all 0.22s ease;
             display: flex;
@@ -169,25 +171,21 @@
         .ch-teams-inline {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 4px;
+            justify-content: center;
+            gap: 8px;
         }
         .ch-team-side {
             display: flex;
             align-items: center;
-            gap: 5px;
             flex: 1;
             min-width: 0;
         }
         .ch-team-side.right { justify-content: flex-end; }
-        .ch-team-side .t-flag { font-size: 16px; flex-shrink: 0; }
         .ch-team-side .t-name {
             font-size: 12px;
             font-weight: 700;
             color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: nowrap; /* إبقاء الاسم كاملاً دون قطع */
         }
         .ch-vs-mid {
             font-size: 10px;
@@ -195,7 +193,7 @@
             color: rgba(255,255,255,0.3);
             letter-spacing: 1px;
             flex-shrink: 0;
-            padding: 0 4px;
+            padding: 0 2px;
         }
 
         /* النتيجة */
@@ -241,12 +239,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: 10px;
+            overflow: hidden;                /* لمنع خروج المشغل عن النطاق */
         }
         .player-wrapper {
             position: relative;
             width: 100%;
+            height: 100%;
             max-width: 120vh;
+            max-height: calc(100vh - 190px); /* 🎯 تحديد حد أقصى للارتفاع لعدم التداخل مع الهيدر وشريط القنوات في أي شاشة 🎯 */
             aspect-ratio: 16/9;
             background: #000;
             border-radius: 10px;
@@ -369,7 +370,7 @@
 
         @media (max-width:600px) {
             .match-badge { display:none; }
-            .channel-card { width: 180px; }
+            .channel-card { min-width: 180px; }
         }
     </style>
 </head>
@@ -511,7 +512,7 @@ function renderChannels() {
 
         if (match) {
             if (match.status === 'live') {
-                statusLabel = '&#9679; مباشر';
+                statusLabel = '● مباشر';
                 statusClass = 'live';
                 if (match.scoreA !== '' && match.scoreB !== '') {
                     scoreHtml = '<div class="ch-score">' + match.scoreA + ' - ' + match.scoreB + '</div>';
@@ -530,14 +531,12 @@ function renderChannels() {
             }
         }
 
-        var flagA  = match ? match.flagA  : '';
-        var flagB  = match ? match.flagB  : '';
         var nameA  = match ? match.teamA  : '—';
         var nameB  = match ? match.teamB  : '—';
         var time   = match ? match.kickoff + ' بتوقيت الرياض' : '—';
         var grp    = match ? match.group + ' | كأس العالم 2026' : '—';
-        var venue  = match ? match.venue  : '';
 
+        // 🎯 تعديل هيكلية كارت القناة ليتطابق مع طلباتك بدقة (إلغاء الملعب وإلغاء الأعلام التي تظهر كحروف إنجليزية عشوائية في ويندوز) 🎯
         card.innerHTML =
             '<div class="ch-header">' +
                 '<span class="ch-name">' + esc(ch.name) + '</span>' +
@@ -546,13 +545,11 @@ function renderChannels() {
 
             '<div class="ch-teams-inline">' +
                 '<div class="ch-team-side">' +
-                    '<span class="t-flag">' + flagA + '</span>' +
                     '<span class="t-name">' + esc(nameA) + '</span>' +
                 '</div>' +
                 '<span class="ch-vs-mid">VS</span>' +
                 '<div class="ch-team-side right">' +
                     '<span class="t-name">' + esc(nameB) + '</span>' +
-                    '<span class="t-flag">' + flagB + '</span>' +
                 '</div>' +
             '</div>' +
 
@@ -561,11 +558,10 @@ function renderChannels() {
             '<div class="ch-footer">' +
                 '<div class="ch-footer-row time-row">' +
                     '<span>&#9201;</span><span>' + time + '</span>' +
-                '</div>' +
+                } +
                 '<div class="ch-footer-row">' +
                     '<span>&#127942;</span><span>' + grp + '</span>' +
                 '</div>' +
-                (venue ? '<div class="ch-footer-row"><span>&#127967;</span><span>' + esc(venue) + '</span></div>' : '') +
             '</div>';
 
         bar.appendChild(card);
