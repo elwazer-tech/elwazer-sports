@@ -129,6 +129,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .player-sub{font-size:12px;color:#666;margin-right:auto;}
 .player-wrapper{flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;min-height:0;}
 #main-video{width:100%;height:100%;max-height:calc(100vh - 54px - 72px);background:#000;}
+#iframe-player{width:100%;height:100%;max-height:calc(100vh - 54px - 72px);background:#000;border:none;} /* تم إضافة تنسيق الآيفريم */
 .player-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#000;z-index:5;}
 .player-loading .spinner-big{width:48px;height:48px;}
 .player-loading p{color:#666;font-size:14px;}
@@ -256,6 +257,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
       <button class="btn-vlc" onclick="openVLC()">🎬 فتح في VLC</button>
     </div>
     <video id="main-video" controls playsinline></video>
+    <iframe id="iframe-player" style="display:none;" allowfullscreen></iframe> <!-- تم إضافة عنصر الآيفريم -->
   </div>
   <div class="channel-strip" id="channel-strip"></div>
 </div>
@@ -286,7 +288,16 @@ const CONFIG = {
 
   // أفلام — ضع روابطك هنا
   movies: [
-    { title:'فيلم فاميلي بيزنس 2026', year:'2026', quality:'HD', emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', url:'https://8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq.vood78.xyz/hls/cxcun54cyhcsvb3x6v3csbvkvb7saxqmt4rpchsm4kp76iwh375ivzsjw3ha/index-v1-a1.m3u8', genre:'كوميدي'       },
+    // تم إضافة خيار isEmbed: true لتشغيل أفلام السيرفرات المحمية عبر الـ iframe
+    { 
+      title:'فيلم فاميلي بيزنس 2026', 
+      year:'2026', 
+      quality:'HD', 
+      emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
+      url:'https://vood.xyz/embed-l6h64idr196g.html', // نستخدم رابط الـ embed هنا بدلاً من الـ m3u8 المباشر المحمي
+      isEmbed: true, 
+      genre:'كوميدي' 
+    },
     { title:'فيلم 2', year:'2023', quality:'4K', emoji:'🎭', url:'', genre:'دراما'      },
     { title:'فيلم 3', year:'2024', quality:'HD', emoji:'🚀', url:'', genre:'خيال علمي'  },
     { title:'فيلم 4', year:'2023', quality:'HD', emoji:'😂', url:'', genre:'كوميديا'    },
@@ -706,7 +717,6 @@ function switchChannel(id, btn) {
 function buildMovies() {
   const grid = document.getElementById('movies-grid');
   grid.innerHTML = CONFIG.movies.map((m, i) => {
-    // تم التعديل هنا لفحص إذا كان الحقل "emoji" يحتوي على رابط صورة خارجي أو مجرد رمز تعبيري (Emoji)
     const isUrl = m.emoji.startsWith('http') || m.emoji.includes('/') || m.emoji.includes('.');
     const posterHtml = isUrl 
       ? `<img src="${m.emoji}" alt="${m.title}">` 
@@ -734,24 +744,41 @@ function playMovie(i) {
   document.getElementById('player-sub').textContent   = m.quality + ' · ' + m.genre;
   document.getElementById('channel-strip').innerHTML  = '';
   showPage('player');
-  playUrl(m.url, m.title);
+  // تم تعديل التمرير ليدعم خيار الـ isEmbed
+  playUrl(m.url, m.title, m.isEmbed);
 }
 
 // ══════════════════════════════════════════════════════
 //  PLAYER
 // ══════════════════════════════════════════════════════
-async function playUrl(url, label) {
+async function playUrl(url, label, isEmbed = false) {
   currentStreamUrl = url;
   const video    = document.getElementById('main-video');
+  const iframe   = document.getElementById('iframe-player');
   const loading  = document.getElementById('player-loading');
   const errorBox = document.getElementById('player-error-box');
 
   loading.style.display  = 'flex';
   errorBox.style.display = 'none';
-  video.style.display    = 'block';
-
+  
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
   video.src = '';
+  iframe.src = '';
+
+  // إذا كان الفيلم يتطلب تشغيل عبر الـ iframe لتخطي حماية CORS
+  if (isEmbed) {
+    video.style.display  = 'none';
+    iframe.style.display = 'block';
+    iframe.src = url;
+    iframe.onload = () => {
+      loading.style.display = 'none';
+    };
+    return;
+  }
+
+  // الوضع الافتراضي للتشغيل المباشر
+  video.style.display  = 'block';
+  iframe.style.display = 'none';
 
   const isHLS = url.includes('.m3u8') || url.includes('/hls/');
 
@@ -781,13 +808,16 @@ async function playUrl(url, label) {
 
 function showPlayerError() {
   document.getElementById('main-video').style.display      = 'none';
+  document.getElementById('iframe-player').style.display   = 'none';
   document.getElementById('player-error-box').style.display = 'flex';
 }
 
 function closePlayer() {
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance=null; }
   const v = document.getElementById('main-video');
+  const iframe = document.getElementById('iframe-player');
   v.pause(); v.src = ''; v.style.display = 'none';
+  iframe.src = ''; iframe.style.display = 'none';
   document.getElementById('player-error-box').style.display = 'none';
   document.getElementById('player-loading').style.display   = 'flex';
   showPage('main');
