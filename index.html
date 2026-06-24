@@ -129,7 +129,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .player-sub{font-size:12px;color:#666;margin-right:auto;}
 .player-wrapper{flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;min-height:0;}
 #main-video{width:100%;height:100%;max-height:calc(100vh - 54px - 72px);background:#000;}
-#iframe-player{width:100%;height:100%;max-height:calc(100vh - 54px - 72px);background:#000;border:none;} /* تم إضافة تنسيق الآيفريم */
+#iframe-player{width:100%;height:100%;max-height:calc(100vh - 54px - 72px);background:#000;border:none;}
+
+/* حاوية الأكواد البرمجية والتضمين الكامل */
+#custom-player-container {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 54px - 72px);
+  background: #000;
+  display: none;
+}
+#custom-player-container iframe, 
+#custom-player-container embed, 
+#custom-player-container video {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+}
+
 .player-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#000;z-index:5;}
 .player-loading .spinner-big{width:48px;height:48px;}
 .player-loading p{color:#666;font-size:14px;}
@@ -256,8 +273,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
       <p>تعذّر تحميل البث<br><span style="font-size:12px;color:#555">جرب رابطاً آخر أو افتح في VLC</span></p>
       <button class="btn-vlc" onclick="openVLC()">🎬 فتح في VLC</button>
     </div>
+    
+    <!-- 1. مشغل الفيديو المباشر لـ m3u8 و mp4 -->
     <video id="main-video" controls playsinline></video>
-    <iframe id="iframe-player" style="display:none;" allowfullscreen></iframe> <!-- تم إضافة عنصر الآيفريم -->
+    
+    <!-- 2. مشغل الآيفريم لروابط التضمين الخارجية -->
+    <iframe id="iframe-player" style="display:none;" allowfullscreen></iframe>
+    
+    <!-- 3. حاوية مخصصة للأكواد البرمجية الكاملة (Iframe كامل أو Embed كامل) -->
+    <div id="custom-player-container"></div>
   </div>
   <div class="channel-strip" id="channel-strip"></div>
 </div>
@@ -288,13 +312,13 @@ const CONFIG = {
 
   // أفلام — ضع روابطك هنا
   movies: [
-    // تم إضافة خيار isEmbed: true لتشغيل أفلام السيرفرات المحمية عبر الـ iframe
     { 
       title:'فيلم فاميلي بيزنس 2026', 
       year:'2026', 
       quality:'HD', 
       emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
-      url:'https://vood.xyz/embed-l6h64idr196g.html', // نستخدم رابط الـ embed هنا بدلاً من الـ m3u8 المباشر المحمي
+      // هنا يمكنك كتابة كود iframe كامل مثل: <iframe src="..."></iframe> أو كود embed كامل أو رابط m3u8 أو mp4 أو رابط تضمين عادي. الكود سيتعامل معها تلقائياً.
+      url:'https://www.youtube.com/embed/dQw4w9WgXcQ', 
       isEmbed: true, 
       genre:'كوميدي' 
     },
@@ -320,8 +344,6 @@ const CONFIG = {
   // ==================================================
   matchLinks: {
      'كندا vs سويسرا':  'https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8',
-    // 'إنجلترا vs غانا':  'https://cdn.example.com/hls/match2.m3u8',
-    // 'كرواتيا vs بنما':  'https://cdn.example.com/hls/match3.m3u8',
   }
 };
 
@@ -463,44 +485,34 @@ function parseMatches(html) {
   const doc = parser.parseFromString(html, 'text/html');
   const matches = [];
 
-  // ssirtv structure: pairs of team blocks with time/score in between
-  // Each match = two team images + time + score + link
-  // Strategy: find all team images and reconstruct
   const allImgs = [...doc.querySelectorAll('img')].filter(img => {
     const src = img.src || img.getAttribute('src') || '';
     return src.includes('wp-content/uploads') && !src.includes('thumb') && !src.includes('logo');
   });
 
-  // Group into pairs
   for (let i = 0; i + 1 < allImgs.length; i += 2) {
     const img1 = allImgs[i];
     const img2 = allImgs[i + 1];
 
-    // Get team names from alt
     const home = img1.getAttribute('alt') || 'فريق 1';
     const away = img2.getAttribute('alt') || 'فريق 2';
 
-    // Walk parent nodes to find the container with time/score/link
     const container = findCommonContainer(img1, img2, doc);
     if (!container) continue;
 
     const text = container.textContent || '';
 
-    // Extract time (HH:MM pattern)
     const timeMatch = text.match(/\b(\d{1,2}:\d{2})\b/);
     const time = timeMatch ? timeMatch[1] : '—';
 
-    // Extract score (X-X pattern)
     const scoreMatch = text.match(/\b(\d+)-(\d+)\b/);
     const homeScore = scoreMatch ? scoreMatch[1] : null;
     const awayScore = scoreMatch ? scoreMatch[2] : null;
 
-    // Extract status
     const isLive    = text.includes('جارية') || text.includes('مباشر') || text.includes('الآن');
     const isEnded   = text.includes('انتهت') || text.includes('منتهية');
     const notStarted= text.includes('لم تبدأ') || text.includes('لم يبدأ');
 
-    // Find the watch link
     const links = [...container.querySelectorAll('a[href]')];
     const watchLink = links.find(a => {
       const h = a.getAttribute('href') || '';
@@ -522,14 +534,12 @@ function parseMatches(html) {
 }
 
 function findCommonContainer(img1, img2, doc) {
-  // Walk up from img1 to find an ancestor that also contains img2
   let node = img1.parentElement;
   for (let i = 0; i < 8; i++) {
     if (!node) break;
     if (node.contains(img2)) return node;
     node = node.parentElement;
   }
-  // Fallback: return body section
   return doc.body;
 }
 
@@ -537,7 +547,6 @@ function findCommonContainer(img1, img2, doc) {
 //  RENDER MATCHES
 // ══════════════════════════════════════════════════════
 
-// Convert "HH:MM" (24h) → "H:MM AM/PM"
 function toAmPm(t) {
   if (!t || t === '—') return { display: t, ampm: '' };
   const parts = t.split(':');
@@ -557,7 +566,6 @@ function renderMatches(matches) {
   }
 
   container.innerHTML = matches.map((m) => {
-    // ── Time + AM/PM + Status pill ──
     const { display: timeDisplay, ampm } = toAmPm(m.time);
     let timeHtml = '';
     if (m.isLive) {
@@ -574,12 +582,10 @@ function renderMatches(matches) {
         ${pillHtml}`;
     }
 
-    // ── Score / VS ──
     const scoreHtml = (m.homeScore !== null && m.homeScore !== undefined)
       ? `<div class="vs-score">${m.homeScore} - ${m.awayScore}</div>`
       : `<div class="vs-dash">VS</div>`;
 
-    // ── Logos ──
     const homeLogo = m.homeLogo
       ? `<img src="${m.homeLogo}" alt="${m.home}" onerror="this.style.display='none'">`
       : '🏠';
@@ -587,7 +593,6 @@ function renderMatches(matches) {
       ? `<img src="${m.awayLogo}" alt="${m.away}" onerror="this.style.display='none'">`
       : '🚌';
 
-    // ── Stream URL: first check CONFIG.matchLinks, then fallback to scraped link ──
     const matchKey1 = m.home + ' vs ' + m.away;
     const matchKey2 = m.away + ' vs ' + m.home;
     const configUrl = CONFIG.matchLinks[matchKey1] || CONFIG.matchLinks[matchKey2] || '';
@@ -599,7 +604,7 @@ function renderMatches(matches) {
 
     const actionHtml = streamUrl
       ? `<button class="btn-watch" onclick="openStream('${encodeURIComponent(streamUrl)}','${encodeURIComponent(matchKey1)}')">▶ شاهد</button>`
-      : ``;   // لا يوجد زر إذا لم يكن هناك رابط
+      : ``;
 
     return `
       <div class="${cardClass}" ${streamUrl ? `onclick="openStream('${encodeURIComponent(streamUrl)}','${encodeURIComponent(matchKey1)}')"` : ''}>
@@ -621,7 +626,6 @@ function renderMatches(matches) {
   }).join('');
 }
 
-// Direct stream open (from matchLinks)
 function openStream(encodedUrl, encodedTitle) {
   const url   = decodeURIComponent(encodedUrl);
   const title = decodeURIComponent(encodedTitle);
@@ -633,13 +637,12 @@ function openStream(encodedUrl, encodedTitle) {
 }
 
 // ══════════════════════════════════════════════════════
-//  OPEN MATCH — fetch the match page to get stream URL
+//  OPEN MATCH
 // ══════════════════════════════════════════════════════
 async function openMatchPage(encodedUrl, encodedTitle) {
   const url   = decodeURIComponent(encodedUrl);
   const title = decodeURIComponent(encodedTitle);
 
-  // If it's a direct stream (hes-goals / korat direct)
   if (url.includes('hes-goals') || url.includes('.m3u8') || url.includes('.mp4')) {
     document.getElementById('player-title').textContent = title;
     document.getElementById('player-sub').textContent   = 'بث مباشر';
@@ -649,14 +652,12 @@ async function openMatchPage(encodedUrl, encodedTitle) {
     return;
   }
 
-  // Fetch match page to find embedded stream
   toast('🔍 جاري البحث عن البث...');
   try {
     const proxyUrl = CONFIG.proxy + encodeURIComponent(url);
     const res = await fetch(proxyUrl);
     const html = await res.text();
 
-    // Look for stream URLs in the page
     const streamUrl = extractStreamUrl(html);
 
     document.getElementById('player-title').textContent = title;
@@ -667,7 +668,6 @@ async function openMatchPage(encodedUrl, encodedTitle) {
     if (streamUrl) {
       playUrl(streamUrl, title);
     } else {
-      // No direct stream found — show channel selector
       document.getElementById('player-loading').style.display = 'none';
       document.getElementById('player-error-box').style.display = 'flex';
       document.getElementById('player-error-box').querySelector('p').innerHTML =
@@ -683,7 +683,6 @@ async function openMatchPage(encodedUrl, encodedTitle) {
 }
 
 function extractStreamUrl(html) {
-  // Common stream URL patterns
   const patterns = [
     /(?:src|source|file|url)\s*[:=]\s*["']([^"']+\.m3u8[^"']*)/gi,
     /["'](https?:\/\/[^"']+\.m3u8[^"']*)/gi,
@@ -744,7 +743,6 @@ function playMovie(i) {
   document.getElementById('player-sub').textContent   = m.quality + ' · ' + m.genre;
   document.getElementById('channel-strip').innerHTML  = '';
   showPage('player');
-  // تم تعديل التمرير ليدعم خيار الـ isEmbed
   playUrl(m.url, m.title, m.isEmbed);
 }
 
@@ -755,19 +753,37 @@ async function playUrl(url, label, isEmbed = false) {
   currentStreamUrl = url;
   const video    = document.getElementById('main-video');
   const iframe   = document.getElementById('iframe-player');
+  const customContainer = document.getElementById('custom-player-container');
   const loading  = document.getElementById('player-loading');
   const errorBox = document.getElementById('player-error-box');
 
   loading.style.display  = 'flex';
   errorBox.style.display = 'none';
   
+  // إيقاف أي بث نشط سابق وتفريغ العناصر
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
   video.src = '';
   iframe.src = '';
+  customContainer.innerHTML = '';
 
-  // إذا كان الفيلم يتطلب تشغيل عبر الـ iframe لتخطي حماية CORS
-  if (isEmbed) {
-    video.style.display  = 'none';
+  // إخفاء كافة المشغلات مؤقتاً حتى تحديد النوع
+  video.style.display  = 'none';
+  iframe.style.display = 'none';
+  customContainer.style.display = 'none';
+
+  const trimmed = url.trim();
+
+  // 1. فحص ما إذا كان المدخل كود HTML كامل (Iframe كامل أو Embed كامل يبدأ بـ < )
+  if (trimmed.startsWith('<')) {
+    customContainer.style.display = 'block';
+    customContainer.innerHTML = trimmed;
+    loading.style.display = 'none'; // إخفاء التحميل فوراً لأن الـ HTML سيعرض مشغله الخاص
+    return;
+  }
+
+  // 2. فحص ما إذا كان الرابط للتضمين (Embed Link) فقط أو مفعل عليه خيار isEmbed
+  const isDirectStream = url.includes('.m3u8') || url.includes('.mp4') || url.includes('/hls/');
+  if (isEmbed || !isDirectStream) {
     iframe.style.display = 'block';
     iframe.src = url;
     iframe.onload = () => {
@@ -776,9 +792,8 @@ async function playUrl(url, label, isEmbed = false) {
     return;
   }
 
-  // الوضع الافتراضي للتشغيل المباشر
+  // 3. التشغيل المباشر لملفات الـ m3u8 والـ mp4
   video.style.display  = 'block';
-  iframe.style.display = 'none';
 
   const isHLS = url.includes('.m3u8') || url.includes('/hls/');
 
@@ -809,6 +824,7 @@ async function playUrl(url, label, isEmbed = false) {
 function showPlayerError() {
   document.getElementById('main-video').style.display      = 'none';
   document.getElementById('iframe-player').style.display   = 'none';
+  document.getElementById('custom-player-container').style.display = 'none';
   document.getElementById('player-error-box').style.display = 'flex';
 }
 
@@ -816,15 +832,26 @@ function closePlayer() {
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance=null; }
   const v = document.getElementById('main-video');
   const iframe = document.getElementById('iframe-player');
+  const customContainer = document.getElementById('custom-player-container');
+  
   v.pause(); v.src = ''; v.style.display = 'none';
   iframe.src = ''; iframe.style.display = 'none';
+  customContainer.innerHTML = ''; customContainer.style.display = 'none';
+  
   document.getElementById('player-error-box').style.display = 'none';
   document.getElementById('player-loading').style.display   = 'flex';
   showPage('main');
 }
 
 function openVLC() {
-  if (currentStreamUrl) window.location.href = 'vlc://' + currentStreamUrl;
+  if (currentStreamUrl) {
+    // التحقق من أن المدخل ليس كود HTML قبل الإرسال لـ VLC
+    if (currentStreamUrl.trim().startsWith('<')) {
+      toast('⚠️ لا يمكن فتح كود التضمين في VLC مباشرة');
+    } else {
+      window.location.href = 'vlc://' + currentStreamUrl;
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════
