@@ -287,7 +287,7 @@ video::media-controls-fullscreen-button {
 @media (max-height: 540px) {
   #player-wrapper:fullscreen .custom-video-logo,
   #player-wrapper:-webkit-full-screen .custom-video-logo {
-    top: -9% !important; /* 👈 تم تعديل الارتفاع إلى -9% خصيصاً في تطبيق الهاتف وتجاوز أبعاد الـ WebView بدقة متناهية */
+    top: -4% !important; /* 👈 تم تعديل الارتفاع إلى -4% خصيصاً في تطبيق الهاتف وتجاوز أبعاد الـ WebView بدقة متناهية */
     right: 2.1% !important;
     width: 18% !important;
   }
@@ -442,8 +442,8 @@ const CONFIG = {
   //  روابط المباريات — يمكنك تحديدها يدوياً
   // ==================================================
   matchLinks: {
-     'كندا vs سويسرا':  'https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8',
-    'قطر vs البوسنة الهرسك':  'https://sh.clouata.space/wooorle2_720/index.m3u8',
+     'البرازيل vs اسكتلندا':  'https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8',
+    'هايتي vs المغرب':  'https://sh.clouata.space/wooorle2_720/index.m3u8',
   }
 };
 
@@ -580,8 +580,7 @@ function parseMatches(html) {
 
     const text = container.textContent || '';
 
-    // تم تعديل كود الاستخراج ليتعرف على التوقيت بصيغة AM/PM بدقة كاملة من السيرفر 🎯
-    const timeMatch = text.match(/\b(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)\b/i);
+    const timeMatch = text.match(/\b(\d{1,2}:\d{2})\b/);
     const time = timeMatch ? timeMatch[1] : '—';
 
     const scoreMatch = text.match(/\b(\d+)-(\d+)\b/);
@@ -626,17 +625,8 @@ function findCommonContainer(img1, img2, doc) {
 //  RENDER MATCHES (فلترة تلقائية لعرض المباريات المباشرة والجارية أولاً) ⚽
 // ══════════════════════════════════════════════════════
 
-// دالة تحويل وعرض التوقيت مع المعالجة الكاملة لرموز الـ AM و الـ PM 🎯
 function toAmPm(t) {
   if (!t || t === '—') return { display: t, ampm: '' };
-  
-  const hasAmPm = t.match(/(AM|PM)/i);
-  if (hasAmPm) {
-    const ampm = hasAmPm[0].toUpperCase();
-    const display = t.replace(/(AM|PM)/i, '').trim();
-    return { display, ampm };
-  }
-  
   const parts = t.split(':');
   if (parts.length < 2) return { display: t, ampm: '' };
   let h = parseInt(parts[0], 10);
@@ -819,18 +809,16 @@ function switchChannel(id, btn) {
 }
 
 // ══════════════════════════════════════════════════════
-//  MOVIES (سحب الصور عبر بروكسي جوجل المتطور لمنع حظر بوسترات الأفلام تماماً) 🎬
+//  MOVIES (سحب الصور من أي مكان ببروكسي متوافق مع الموبايل والويب) 🎬
 // ══════════════════════════════════════════════════════
 function buildMovies() {
   const grid = document.getElementById('movies-grid');
   grid.innerHTML = CONFIG.movies.map((m, i) => {
     const isUrl = m.emoji.startsWith('http') || m.emoji.includes('/') || m.emoji.includes('.');
     
-    // سحب صورة الشعار للموبايل وتطبيق الويب فيو عبر بروكسي جوجل المتجاوب فائق السرعة لتخطي حظر السيرفرات الخارجية 🎯
-    const imageUrl = isUrl ? (`https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=604800&url=` + encodeURIComponent(m.emoji)) : m.emoji;
-    
+    // تم إضافة referrerpolicy="no-referrer" لتخطي حظر Hotlink لسيرفرات الأفلام الخارجية وصور البوسترات 🎯
     const posterHtml = isUrl 
-      ? `<img src="${imageUrl}" alt="${m.title}" referrerpolicy="no-referrer">` 
+      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer">` 
       : `<span>${m.emoji}</span>`;
 
     return `
@@ -922,7 +910,9 @@ async function playUrl(url, label, isEmbed = false) {
         // تجربة البروكسي كخيار احتياطي لملفات mp4 المحمية 🎯
         if (!video.src.includes(CONFIG.proxy)) {
           video.src = CONFIG.proxy + encodeURIComponent(url);
-          video.play().catch(()=>{});
+          video.play()
+            .then(() => { loading.style.display = 'none'; })
+            .catch(() => showPlayerError());
         } else {
           loading.style.display = 'none';
           showPlayerError('خطأ في التشغيل: ' + e.message);
@@ -953,7 +943,9 @@ async function playUrl(url, label, isEmbed = false) {
       .catch(e => {
         if (!video.src.includes(CONFIG.proxy)) {
           video.src = CONFIG.proxy + encodeURIComponent(url);
-          video.play().catch(()=>{});
+          video.play()
+            .then(() => { loading.style.display = 'none'; })
+            .catch(() => showPlayerError());
         } else {
           loading.style.display = 'none';
           showPlayerError(e.message);
@@ -1037,9 +1029,7 @@ function openVLC() {
   }
 }
 
-// ══════════════════════════════════════════════════════
-//  FULLSCREEN SYSTEM (تصحيح وتثبيت اللوجو بالأبعاد والنسب الأصلية تماماً عند التكبير) 🎯
-// ══════════════════════════════════════════════════════
+// ربط النقر المزدوج (Double Click) لتفعيل وتكبير المشغل بالكامل مع الحفاظ على اللوجو العائم 🎯
 function toggleFullscreen() {
   const wrapper = document.getElementById('player-wrapper');
   if (!document.fullscreenElement) {
