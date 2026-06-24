@@ -181,10 +181,9 @@ video::-webkit-media-controls-fullscreen-button{display:none !important;}
     </div>
   </nav>
   <div id="tab-matches">
-    <div class="section-header">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <div class="section-title">جدول المباريات</div>
       <div class="section-badge" id="matches-badge">—</div>
-      <div class="section-line"></div>
     </div>
     <div class="day-tabs" id="day-tabs"></div>
     <div class="pull-hint" id="pull-hint">↓ اسحب للتحديث</div>
@@ -771,7 +770,7 @@ async function loadMatchesSilent(dayKey) {
     if (matches.length > 0) {
       currentMatches = matches;
       renderMatches(matches);
-      document.getElementById('matches-badge').textContent = matches.length + ' مباراة';
+      document.getElementById('matches-badge').textContent = matches.length + ' مباريات';
     }
   } catch(e) { console.warn('Silent refresh failed:', e); }
   finally {
