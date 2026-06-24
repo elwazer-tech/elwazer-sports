@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Elwazer TV</title>
+<title>Elwazer TV — بث مباشر</title>
 
 <!-- استدعاء ملف الـ manifest لدعم تثبيت الموقع كتطبيق PWA 🎯 -->
 <link rel="manifest" href="manifest.json">
@@ -191,11 +191,11 @@ video::media-controls-fullscreen-button {
   width: 18% !important;
 }
 
-/* زر ملء الشاشة العائم المخصص (للحفاظ على الشعار مرئياً أثناء التكبير) 🎯 */
+/* زر ملء الشاشة العائم المخصص - تم نقله في الأسفل جهة اليمين بجوار أيقونة تعلية الصوت 🎯 */
 #custom-fullscreen-btn {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
+  bottom: 10px;
+  right: 12px;
   z-index: 999999;
   background: rgba(10, 10, 10, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -264,7 +264,7 @@ video::media-controls-fullscreen-button {
     gap: 6px;
     border-radius: 10px;
   }
-  .team-logo{width:28px; height:28px;}
+  .team-logo{width:34px; height:34px;}
   .team-name{font-size:10px; font-weight:600;}
   .vs-score{font-size:15px; letter-spacing:1px;}
   .vs-dash{font-size:13px;}
@@ -347,7 +347,7 @@ video::media-controls-fullscreen-button {
       <!-- اللوجو العائم فوق المشغلات والـ embed بالنسب المحددة لديك تماماً 🎯 -->
       <img src="logo.png" class="custom-video-logo" id="custom-logo" alt="Logo">
 
-      <!-- زر ملء الشاشة المخصص العائم للحفاظ على اللوجو العائم بنسبتك الدقيقة 🎯 -->
+      <!-- زر ملء الشاشة المخصص العائم للحفاظ على اللوجو العائم بنسبتك الدقيقة (تم نقله للركن السفلي الأيمن بجوار أيقونة الصوت) 🎯 -->
       <button id="custom-fullscreen-btn" onclick="toggleFullscreen()" title="ملء الشاشة">
         <svg viewBox="0 0 24 24">
           <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -384,7 +384,7 @@ const CONFIG = {
       year:'2026', 
       quality:'HD', 
       emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
-      url:'https://amoo.larhu.website/hls/vxzxgs6cqkqfycihmto7zuxgj6bpsbzdfzjy2najr2icmmmadcauc4s4z6wa/index-v1-a1.m3u8', 
+      url:'https://8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq.vood78.xyz/hls/cxcun54cyhcsvb3x6v3csbvkvb7saxqmt4rpchsm4kp76iwh375ivzsjw3ha/index-v1-a1.m3u8', 
       isEmbed: false, 
       genre:'كوميدي' 
     },
@@ -650,6 +650,7 @@ function renderMatches(matches) {
       ? `<div class="vs-score">${m.homeScore} - ${m.awayScore}</div>`
       : `<div class="vs-dash">VS</div>`;
 
+    // تم إضافة referrerpolicy لمنع حجب شعارات الفرق بسبب حماية السيرفرات الخارجية 🎯
     const homeLogo = m.homeLogo
       ? `<img src="${m.homeLogo}" alt="${m.home}" referrerpolicy="no-referrer" onerror="this.style.display='none'">`
       : '🏠';
@@ -794,9 +795,9 @@ function buildMovies() {
   grid.innerHTML = CONFIG.movies.map((m, i) => {
     const isUrl = m.emoji.startsWith('http') || m.emoji.includes('/') || m.emoji.includes('.');
     
-    // تم التعديل واستعادة الرابط المباشر للبوسترات ليعمل دون بروكسي مع تفعيل حظر referrers لتشغيله في أي مكان 🎯
+    // تم إضافة referrerpolicy="no-referrer" لتخطي حظر Hotlink لسيرفرات الأفلام الخارجية وصور البوسترات 🎯
     const posterHtml = isUrl 
-      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer" crossorigin="anonymous">` 
+      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer">` 
       : `<span>${m.emoji}</span>`;
 
     return `
