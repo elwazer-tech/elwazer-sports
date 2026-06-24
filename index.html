@@ -183,11 +183,15 @@ video::media-controls-fullscreen-button {
   background: transparent !important;
 }
 
-/* ضمان بقاء اللوجو عائماً ومرئياً أثناء وضع تكبير ملء الشاشة المخصص بزاويته الدقيقة 🎯 */
-#player-wrapper:fullscreen .custom-video-logo,
+/* ضمان بقاء اللوجو عائماً ومرئياً ومرفوعاً لأعلى حافة أثناء وضع ملء الشاشة المخصص بزاويته الدقيقة 🎯 */
+#player-wrapper:fullscreen .custom-video-logo {
+  right: 2.1% !important;
+  top: -1% !important;            /* 👈 تم تعديلها هنا ليرتفع اللوجو لأعلى حافة أثناء وضع التكبير والتكبير الكامل */
+  width: 18% !important;
+}
 #player-wrapper:-webkit-full-screen .custom-video-logo {
   right: 2.1% !important;
-  top: -1% !important;
+  top: -4.5% !important;            /* 👈 تم تعديلها هنا ليرتفع اللوجو لأعلى حافة أثناء وضع التكبير والتكبير الكامل */
   width: 18% !important;
 }
 
@@ -252,7 +256,7 @@ video::media-controls-fullscreen-button {
   .nav-tab{font-size:13px;padding:6px 12px;}
   #tab-matches,#tab-movies{padding:12px;}
   
-  /* 🎯 تعديل اللوجو العائم على شاشة الموبايل والهواتف ليرتفع لأعلى بنفس النسبة المريحة للعين */
+  /* تعديل اللوجو العائم على شاشة الموبايل والهواتف ليرتفع لأعلى بنفس النسبة المريحة للعين */
   .custom-video-logo {
     top: -1% !important; /* قمنا بإضافتها وضبطها هنا لتطابق الموبايل بدقة 🎯 */
     right: 2.1% !important;
@@ -387,7 +391,7 @@ const CONFIG = {
   // أفلام — ضع روابطك هنا
   movies: [
     { 
-      title:'فيلم فاميلي بيزنس', 
+      title:'فيلم فاميلي بيزنس 2026', 
       year:'2026', 
       quality:'HD', 
       emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
@@ -1015,7 +1019,9 @@ function openVLC() {
   }
 }
 
-// ربط النقر المزدوج (Double Click) لتفعيل وتكبير المشغل بالكامل مع الحفاظ على اللوجو العائم 🎯
+// ══════════════════════════════════════════════════════
+//  FULLSCREEN SYSTEM (تصحيح وتثبيت اللوجو بالأبعاد والنسب الأصلية تماماً عند التكبير) 🎯
+// ══════════════════════════════════════════════════════
 function toggleFullscreen() {
   const wrapper = document.getElementById('player-wrapper');
   if (!document.fullscreenElement) {
