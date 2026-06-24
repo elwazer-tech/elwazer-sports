@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SportsFlix — بث مباشر</title>
+<!-- استدعاء مشغل Clappr الاحترافي -->
+<script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 :root {
@@ -18,22 +20,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .page{display:none;min-height:100vh;}
 .page.active{display:block;}
 
-/* NAVBAR */
+/* NAVBAR (تعديل الهيدر ليصبح نظيفاً ومبسطاً بدون حسابات) */
 #navbar{background:rgba(7,8,9,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;padding:0 28px;height:62px;gap:20px;}
 .nav-brand{font-size:22px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;}
 .nav-brand span{color:var(--red);}
-.nav-tabs{display:flex;gap:4px;flex:1;}
+.nav-tabs{display:flex;gap:4px;flex:1;justify-content:flex-end;}
 .nav-tab{padding:7px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;border:none;background:transparent;font-family:'Tajawal',sans-serif;}
 .nav-tab:hover{color:var(--text);background:var(--card);}
 .nav-tab.active{color:var(--text);background:var(--card2);}
-.nav-live-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600;}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1.2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.nav-user{display:flex;align-items:center;gap:10px;}
-.nav-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--blue));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
-.nav-username{font-size:13px;font-weight:600;}
-.btn-logout{background:var(--card);border:1px solid var(--border2);color:var(--text2);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;}
-.btn-logout:hover{color:var(--red);border-color:var(--red);}
 
 /* SECTION */
 .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
@@ -199,7 +193,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 @media(max-width:640px){
   #navbar{padding:0 14px;gap:12px;}
   .nav-brand{font-size:18px;}
-  .nav-username{display:none;}
   #tab-matches,#tab-movies{padding:16px;}
   .match-card{padding:12px 14px;gap:10px;}
   .team-logo{width:34px;height:34px;}
@@ -229,13 +222,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('matches',this)">⚽ المباريات</button>
       <button class="nav-tab" onclick="switchTab('movies',this)">🎬 أفلام</button>
-    </div>
-    <div class="nav-live-dot"><div class="live-dot"></div>LIVE</div>
-    <div class="nav-user">
-      <div class="nav-avatar" id="nav-avatar">م</div>
-      <span class="nav-username" id="nav-username">المشرف</span>
-      <!-- زر إعادة تحميل لتنشيط السيرفرات -->
-      <button class="btn-logout" onclick="location.reload()">🔄 تحديث</button>
     </div>
   </nav>
 
@@ -316,7 +302,7 @@ const CONFIG = {
       year:'2026', 
       quality:'HD', 
       emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
-      url:'https://8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq.vood78.xyz/hls/cxcun54cyhcsvb3x6v3csbvkvb7saxqmt4rpchsm4kp76iwh375ivzsjw3ha/index-v1-a1.m3u8', 
+      url:'https://amoo.larhu.website/hls/vxzxgs6cqkqfycihmto7zuxgj6bpsbzdfzjy2najr2icmmmadcauc4s4z6wa/index-v1-a1.m3u8', 
       isEmbed: false, 
       genre:'كوميدي' 
     },
