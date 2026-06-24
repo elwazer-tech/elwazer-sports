@@ -287,7 +287,7 @@ video::media-controls-fullscreen-button {
 @media (max-height: 540px) {
   #player-wrapper:fullscreen .custom-video-logo,
   #player-wrapper:-webkit-full-screen .custom-video-logo {
-    top: -4% !important; /* 👈 تم تعديل الارتفاع إلى -4% خصيصاً في تطبيق الهاتف وتجاوز أبعاد الـ WebView بدقة متناهية */
+    top: -9.5% !important; /* 👈 تم تعديل الارتفاع إلى -9.5% خصيصاً في تطبيق الهاتف وتجاوز أبعاد الـ WebView بدقة متناهية */
     right: 2.1% !important;
     width: 18% !important;
   }
@@ -445,8 +445,8 @@ const CONFIG = {
   //  روابط المباريات — يمكنك تحديدها يدوياً
   // ==================================================
   matchLinks: {
-     'البرازيل vs اسكتلندا':  'https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8',
-    'هايتي vs المغرب':  'https://sh.clouata.space/wooorle2_720/index.m3u8',
+     'كندا vs سويسرا':  'https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8',
+    'قطر vs البوسنة الهرسك':  'https://sh.clouata.space/wooorle2_720/index.m3u8',
   }
 };
 
@@ -841,16 +841,18 @@ function switchChannel(id, btn) {
 }
 
 // ══════════════════════════════════════════════════════
-//  MOVIES (سحب الصور من أي مكان ببروكسي متوافق مع الموبايل والويب) 🎬
+//  MOVIES (سحب الصور عبر بروكسي ويسيرف العالمي فائق الاستقرار لتعمل بالموبايل) 🎬
 // ══════════════════════════════════════════════════════
 function buildMovies() {
   const grid = document.getElementById('movies-grid');
   grid.innerHTML = CONFIG.movies.map((m, i) => {
     const isUrl = m.emoji.startsWith('http') || m.emoji.includes('/') || m.emoji.includes('.');
     
-    // تم إضافة referrerpolicy="no-referrer" لتخطي حظر Hotlink لسيرفرات الأفلام الخارجية وصور البوسترات 🎯
+    // سحب صور الأفلام وتوجيهها عبر البروكسي العالمي ويسيرف لتعمل بداخل الموبايل والتطبيق دون حظر 🎯
+    const imageUrl = isUrl ? (`https://images.weserv.nl/?url=` + encodeURIComponent(m.emoji)) : m.emoji;
+    
     const posterHtml = isUrl 
-      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer">` 
+      ? `<img src="${imageUrl}" alt="${m.title}" referrerpolicy="no-referrer">` 
       : `<span>${m.emoji}</span>`;
 
     return `
@@ -942,9 +944,7 @@ async function playUrl(url, label, isEmbed = false) {
         // تجربة البروكسي كخيار احتياطي لملفات mp4 المحمية 🎯
         if (!video.src.includes(CONFIG.proxy)) {
           video.src = CONFIG.proxy + encodeURIComponent(url);
-          video.play()
-            .then(() => { loading.style.display = 'none'; })
-            .catch(() => showPlayerError());
+          video.play().catch(()=>{});
         } else {
           loading.style.display = 'none';
           showPlayerError('خطأ في التشغيل: ' + e.message);
@@ -975,9 +975,7 @@ async function playUrl(url, label, isEmbed = false) {
       .catch(e => {
         if (!video.src.includes(CONFIG.proxy)) {
           video.src = CONFIG.proxy + encodeURIComponent(url);
-          video.play()
-            .then(() => { loading.style.display = 'none'; })
-            .catch(() => showPlayerError());
+          video.play().catch(()=>{});
         } else {
           loading.style.display = 'none';
           showPlayerError(e.message);
@@ -1061,7 +1059,9 @@ function openVLC() {
   }
 }
 
-// ربط النقر المزدوج (Double Click) لتفعيل وتكبير المشغل بالكامل مع الحفاظ على اللوجو العائم 🎯
+// ══════════════════════════════════════════════════════
+//  FULLSCREEN SYSTEM (تصحيح وتثبيت اللوجو بالأبعاد والنسب الأصلية تماماً عند التكبير) 🎯
+// ══════════════════════════════════════════════════════
 function toggleFullscreen() {
   const wrapper = document.getElementById('player-wrapper');
   if (!document.fullscreenElement) {
