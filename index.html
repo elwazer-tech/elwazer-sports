@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Elwazer TV — بث مباشر</title>
+<title>Elwazer TV</title>
+
+<!-- استدعاء ملف الـ manifest لدعم تثبيت الموقع كتطبيق PWA 🎯 -->
+<link rel="manifest" href="manifest.json">
 
 <!-- استدعاء مكتبة Hls المستقرة والسريعة مباشرة في الرأس لمنع أي تعليق أو حظر أمني بالويب فيو 🎯 -->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
@@ -248,18 +251,29 @@ video::media-controls-fullscreen-button {
   .nav-brand{font-size:19px;}
   .nav-tab{font-size:13px;padding:6px 12px;}
   #tab-matches,#tab-movies{padding:12px;}
-  .match-card{padding:12px 14px;gap:10px;}
-  .team-logo{width:34px;height:34px;}
-  .team-name{font-size:11px;}
-  .vs-score{font-size:18px;}
-  .match-action{min-width:70px;}
-  .btn-watch{padding:6px 12px;font-size:12px;}
   
   /* تعديل التوزيع في الموبايل ليصبح عمودين متجاورين كالتطبيقات الرسمية لشاشات الهواتف 🎯 */
   .movies-grid{
     grid-template-columns:repeat(2, 1fr) !important;
     gap: 10px !important;
   }
+  
+  /* كروت المباريات المدمجة والمختصرة للموبايل لمنع التمرير الطويل 🎯 */
+  .match-card{
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  .team-logo{width:28px; height:28px;}
+  .team-name{font-size:10px; font-weight:600;}
+  .vs-score{font-size:15px; letter-spacing:1px;}
+  .vs-dash{font-size:13px;}
+  .match-time { min-width: 50px; }
+  .time-val { font-size: 13px; }
+  .time-ampm { font-size: 9px; }
+  .status-pill { font-size: 8px; padding: 1px 6px; }
+  .btn-watch { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
+  .match-divider { height: 32px; }
 }
 </style>
 </head>
@@ -586,7 +600,7 @@ function findCommonContainer(img1, img2, doc) {
 }
 
 // ══════════════════════════════════════════════════════
-//  RENDER MATCHES
+//  RENDER MATCHES (فلترة تلقائية لعرض المباريات المباشرة والجارية أولاً) ⚽
 // ══════════════════════════════════════════════════════
 
 function toAmPm(t) {
@@ -606,6 +620,13 @@ function renderMatches(matches) {
     container.innerHTML = `<div class="empty-state"><div style="font-size:40px;margin-bottom:12px">😴</div><div>لا توجد مباريات في هذا اليوم</div></div>`;
     return;
   }
+
+  // فلترة ذكية لفرز وعرض المباريات الجارية والمباشرة الآن في أول الجدول دائماً ⚽
+  matches.sort((a, b) => {
+    const aLive = a.isLive ? 1 : 0;
+    const bLive = b.isLive ? 1 : 0;
+    return bLive - aLive; 
+  });
 
   container.innerHTML = matches.map((m) => {
     const { display: timeDisplay, ampm } = toAmPm(m.time);
@@ -628,7 +649,6 @@ function renderMatches(matches) {
       ? `<div class="vs-score">${m.homeScore} - ${m.awayScore}</div>`
       : `<div class="vs-dash">VS</div>`;
 
-    // تم إضافة referrerpolicy لمنع حجب شعارات الفرق بسبب حماية السيرفرات الخارجية 🎯
     const homeLogo = m.homeLogo
       ? `<img src="${m.homeLogo}" alt="${m.home}" referrerpolicy="no-referrer" onerror="this.style.display='none'">`
       : '🏠';
@@ -766,16 +786,16 @@ function switchChannel(id, btn) {
 }
 
 // ══════════════════════════════════════════════════════
-//  MOVIES
+//  MOVIES (سحب الصور من أي مكان ببروكسي متوافق مع الموبايل والويب) 🎬
 // ══════════════════════════════════════════════════════
 function buildMovies() {
   const grid = document.getElementById('movies-grid');
   grid.innerHTML = CONFIG.movies.map((m, i) => {
     const isUrl = m.emoji.startsWith('http') || m.emoji.includes('/') || m.emoji.includes('.');
     
-    // تم إضافة referrerpolicy="no-referrer" لتخطي حظر Hotlink لسيرفرات الأفلام الخارجية وصور البوسترات 🎯
+    // تم التعديل واستعادة الرابط المباشر للبوسترات ليعمل دون بروكسي مع تفعيل حظر referrers لتشغيله في أي مكان 🎯
     const posterHtml = isUrl 
-      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer">` 
+      ? `<img src="${m.emoji}" alt="${m.title}" referrerpolicy="no-referrer" crossorigin="anonymous">` 
       : `<span>${m.emoji}</span>`;
 
     return `
@@ -986,7 +1006,9 @@ function openVLC() {
   }
 }
 
-// ربط النقر المزدوج (Double Click) لتفعيل وتكبير المشغل بالكامل مع الحفاظ على اللوجو العائم 🎯
+// ══════════════════════════════════════════════════════
+//  FULLSCREEN SYSTEM (تصحيح وتثبيت اللوجو بالأبعاد والنسب الأصلية تماماً عند التكبير) 🎯
+// ══════════════════════════════════════════════════════
 function toggleFullscreen() {
   const wrapper = document.getElementById('player-wrapper');
   if (!document.fullscreenElement) {
@@ -1000,6 +1022,40 @@ function toggleFullscreen() {
 
 document.getElementById('main-video').addEventListener('dblclick', toggleFullscreen);
 document.getElementById('iframe-player').addEventListener('dblclick', toggleFullscreen);
+
+// ══════════════════════════════════════════════════════
+//  MOBILES / WEBVIEW PULL TO REFRESH (ميزة السحب للتحديث الفائقة للموبايل) 🎯
+// ══════════════════════════════════════════════════════
+let startY = 0;
+let isPulling = false;
+
+window.addEventListener('touchstart', e => {
+  if (window.scrollY === 0) {
+    startY = e.touches[0].pageY;
+    isPulling = true;
+  }
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (!isPulling) return;
+  const currentY = e.touches[0].pageY;
+  const diff = currentY - startY;
+  
+  // إذا تم سحب الصفحة لأسفل بمسافة كافية وهي في الأعلى، نقوم بالتحديث الفوري
+  if (diff > 90 && window.scrollY === 0) {
+    isPulling = false;
+    triggerPullRefresh();
+  }
+}, { passive: true });
+
+window.addEventListener('touchend', () => {
+  isPulling = false;
+});
+
+async function triggerPullRefresh() {
+  toast('🔄 جاري تحديث جدول المباريات والسينما...');
+  await initMain();
+}
 </script>
 </body>
 </html>
