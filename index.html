@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SportsFlix — بث مباشر</title>
-<!-- استدعاء مشغل Clappr الاحترافي -->
-<script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 :root {
@@ -14,7 +12,6 @@
   --red:#e63946;--red-glow:rgba(230,57,70,0.2);
   --gold:#f4a72a;--green:#2ecc71;--blue:#3a7bd5;
   --text:#dde3f0;--text2:#7a8499;--text3:#3d4560;
-  --accent: #00ff88;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);min-height:100vh;overflow-x:hidden;}
@@ -130,6 +127,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .btn-back:hover{background:rgba(255,255,255,.14);}
 .player-title{font-size:15px;font-weight:700;}
 .player-sub{font-size:12px;color:#666;margin-right:auto;}
+
 .player-wrapper-outer {
   flex: 1;
   min-height: 0;
@@ -153,136 +151,53 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
   box-shadow: 0 15px 40px rgba(0,0,0,0.6);
 }
 
-/* CLAPPR VIDEO ELEMENTS STYLING */
-#clappr-player { width:100%; height:100%; }
-#clappr-player video { object-fit: fill !important; width:100% !important; height:100% !important; }
-
-/* IFRAME & CUSTOM PLAYER CONTAINER */
-#iframe-player {
-  width: 100%;
-  height: 100%;
-  border: none;
+/* NATIVE VIDEO STYLING */
+#main-video {
+  width: 100%; height: 100%;
   background: #000;
-  position: absolute;
-  inset: 0;
-  z-index: 999;
+  display: none;
+}
+
+/* IFRAME & CUSTOM EMBED CONTAINER */
+#iframe-player {
+  width: 100%; height: 100%;
+  border: none; background: #000;
+  display: none;
 }
 #custom-player-container {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   background: #000;
-  position: absolute;
-  inset: 0;
-  z-index: 999;
+  display: none;
 }
 #custom-player-container iframe, 
 #custom-player-container embed {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100% !important; height: 100% !important;
   border: none !important;
 }
 
-/* REFRESH BUTTON */
-.refresh-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 9999999;
-  background: rgba(10,10,10,0.82);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #fff;
-  padding: 6px 13px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  backdrop-filter: blur(6px);
-  transition: background 0.2s;
-  font-family: inherit;
-}
-.refresh-btn:hover { background: rgba(66,20,128,0.75); }
-.refresh-btn svg { width:13px; height:13px; fill:currentColor; }
-.refresh-btn.spinning svg { animation: spin 0.6s linear; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* CUSTOM LOGO ABOVE VIDEOS */
+/* FLOATING LOGO (تصميم لوجو عائم رائع) */
 .custom-video-logo {
   position: absolute !important;
-  top: 0.1% !important;
-  right: 2.1% !important;
-  z-index: 999999 !important;
-  width: 18% !important;
+  top: 3% !important;
+  right: 3% !important;
+  z-index: 99999 !important;
+  width: 14% !important;
+  max-width: 110px;
   aspect-ratio: 1.45/1 !important;
-  object-fit: fill !important;
+  object-fit: contain !important;
   pointer-events: none !important;
   background: transparent !important;
-  transition: right 0.15s ease;
 }
 
-/* UNMUTE OVERLAY */
-.unmute-overlay {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  z-index: 9999999;
-  background: rgba(10,10,10,0.88);
-  border: 1px solid rgba(0,255,136,0.3);
-  color: #fff;
-  padding: 13px 26px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 700;
-  display: none;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  animation: pulse 2s infinite;
-  font-family: inherit;
-}
-.unmute-overlay svg { width:20px; height:20px; fill:currentColor; }
-@keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(0,255,136,0.35); }
-  70%  { box-shadow: 0 0 0 10px rgba(0,255,136,0); }
-  100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
-}
-
-/* OFFLINE OVERLAY */
-.offline-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 9999998;
-  background: rgba(7,7,8,0.94);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 24px;
-  backdrop-filter: blur(12px);
-}
-.offline-overlay .off-icon {
-  width: 56px; height: 56px;
-  background: rgba(255,59,48,0.12);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 14px;
-}
-.offline-overlay .off-icon svg { width:28px; height:28px; fill:#ff3b30; }
-.offline-overlay h3 { font-size:16px; margin-bottom:6px; }
-.offline-overlay p  { font-size:12px; color:var(--text2); max-width:280px; line-height:1.6; }
-
+/* LOADING & ERROR SLIDES */
 .player-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#000;z-index:5;}
 .player-loading .spinner-big{width:48px;height:48px;}
 .player-loading p{color:#666;font-size:14px;}
-.player-error-box{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#000;}
+.player-error-box{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#000;z-index:10;}
 .player-error-box .err-icon{font-size:48px;}
 .player-error-box p{color:#888;font-size:14px;text-align:center;}
-.btn-vlc{background:#f60;border:none;color:#fff;border-radius:8px;padding:9px 20px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-vlc{background:#f60;border:none;color:#fff;border-radius:8px;padding:9px 20px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+
 .channel-strip{background:#080808;border-top:1px solid #111;padding:12px 24px;display:flex;gap:10px;overflow-x:auto;flex-shrink:0;}
 .channel-strip::-webkit-scrollbar{display:none;}
 .strip-ch{flex-shrink:0;padding:7px 16px;border-radius:8px;background:#111;border:1px solid #222;color:#888;font-size:13px;font-weight:600;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;white-space:nowrap;}
@@ -394,51 +309,30 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
   </div>
   
   <div class="player-wrapper-outer">
-    <div class="player-wrapper" id="clappr-wrapper">
+    <div class="player-wrapper" id="player-wrapper">
       
-      <!-- زر تحديث القناة الحالية -->
-      <button class="refresh-btn" id="refresh-btn" onclick="reloadCurrentChannel()">
-          <svg viewBox="0 0 24 24">
-              <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-          </svg>
-          تحديث البث
-      </button>
-
-      <!-- حاوية مشغل Clappr الأساسي -->
-      <div id="clappr-player"></div>
+      <!-- 1. مشغل الفيديو المباشر السريع والخفيف (نفس آلية StreamDNS) -->
+      <video id="main-video" controls playsinline></video>
       
-      <!-- مشغل الآيفريم لروابط التضمين الخارجية -->
-      <iframe id="iframe-player" style="display:none;" allowfullscreen></iframe>
+      <!-- 2. مشغل الآيفريم لروابط التضمين الخارجية -->
+      <iframe id="iframe-player" allowfullscreen></iframe>
       
-      <!-- حاوية للأكواد البرمجية الكاملة (Iframe كامل أو Embed كامل) -->
-      <div id="custom-player-container" style="display:none;"></div>
+      <!-- 3. حاوية مخصصة للأكواد البرمجية الكاملة (Iframe كامل أو Embed كامل) -->
+      <div id="custom-player-container"></div>
 
       <!-- اللوجو العائم فوق المشغلات والـ embed -->
       <img src="logo.png" class="custom-video-logo" id="custom-logo" alt="">
 
-      <!-- شاشة البث متوقف مؤقتاً -->
-      <div id="offline-overlay" class="offline-overlay">
-          <div class="off-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          </div>
-          <h3>البث متوقف مؤقتاً</h3>
-          <p>يرجى تجربة قناة أخرى أو الانتظار قليلاً حتى يعود البث</p>
-      </div>
-
-      <!-- شاشة كتم الصوت وتفعيل الصوت بنقرة -->
-      <div id="unmute-overlay" class="unmute-overlay" onclick="unmutePlayer()">
-          <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.16 6.07-5.14 7.03c1.92-.61 3.44-2.13 4.05-4.05C18.42 13.93 19 12.82 19 12zm-8.81 7.19L5.35 14H2v-4h3.35l4.84-5.19C10.74 4.26 11.5 4.61 11.5 5.3v13.4c0 .69-.76 1.04-1.31.49z"/></svg>
-          اضغط لتفعيل الصوت
-      </div>
-
+      <!-- شاشة مؤشر التحميل -->
       <div class="player-loading" id="player-loading" style="display: none;">
         <div class="spinner-big"></div>
         <p>جاري تحميل البث...</p>
       </div>
-      
+
+      <!-- شاشة خطأ التشغيل -->
       <div class="player-error-box" id="player-error-box" style="display: none;">
         <div class="err-icon">📡</div>
-        <p>تعذّر تحميل البث<br><span style="font-size:12px;color:#555">جرب رابطاً آخر أو افتح في VLC</span></p>
+        <p>تعذّر تحميل البث<br><span style="font-size:12px;color:#555" id="player-error-msg">جرّب فتح الرابط في VLC</span></p>
         <button class="btn-vlc" onclick="openVLC()">🎬 فتح في VLC</button>
       </div>
 
@@ -478,6 +372,7 @@ const CONFIG = {
       year:'2026', 
       quality:'HD', 
       emoji:'https://a.asd.ink/wp-content/uploads/2026/06/cEIPRBe6THaUNXWYUBSW2dtqlC4-scaled-367x550.webp', 
+      // تم تبديل الرابط المباشر للفيلم برابط البث m3u8 السريع كالمشغل المفضل لديك
       url:'https://8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq8gwaiubvfqtm5gxzsq.vood78.xyz/hls/cxcun54cyhcsvb3x6v3csbvkvb7saxqmt4rpchsm4kp76iwh375ivzsjw3ha/index-v1-a1.m3u8', 
       isEmbed: false, 
       genre:'كوميدي' 
@@ -512,8 +407,25 @@ const CONFIG = {
 // ══════════════════════════════════════════════════════
 let currentUser = null;
 let currentStreamUrl = '';
-let clapprInstance = null;
+let hlsInstance = null;
 let currentMatches = [];
+
+const HLSJS_URL = 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js';
+let hlsLoaded = false;
+
+// ══════════════════════════════════════════════════════
+//  DYNAMIC HLS LOADER
+// ══════════════════════════════════════════════════════
+function loadHlsJS() {
+  return new Promise((res, rej) => {
+    if (hlsLoaded || typeof Hls !== 'undefined') { hlsLoaded = true; res(); return; }
+    const s = document.createElement('script');
+    s.src = HLSJS_URL;
+    s.onload = () => { hlsLoaded = true; res(); };
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
 
 // ══════════════════════════════════════════════════════
 //  INIT
@@ -645,7 +557,7 @@ function parseMatches(html) {
   const matches = [];
 
   const allImgs = [...doc.querySelectorAll('img')].filter(img => {
-    const src = img.src || img.getAttribute('src') || '';
+    const src = img.src || img.getAttribute('src'] || '';
     return src.includes('wp-content/uploads') && !src.includes('thumb') && !src.includes('logo');
   });
 
@@ -906,45 +818,37 @@ function playMovie(i) {
 }
 
 // ══════════════════════════════════════════════════════
-//  PLAYER (الدمج المطور لمشغل CLAPPR)
+//  PLAYER (نظام تشغيل ذكي وخفيف فائق السرعة كـ StreamDNS)
 // ══════════════════════════════════════════════════════
 async function playUrl(url, label, isEmbed = false) {
   currentStreamUrl = url;
-  const clapprContainer = document.getElementById('clappr-player');
-  const iframe          = document.getElementById('iframe-player');
+  const video    = document.getElementById('main-video');
+  const iframe   = document.getElementById('iframe-player');
   const customContainer = document.getElementById('custom-player-container');
-  const loading         = document.getElementById('player-loading');
-  const errorBox        = document.getElementById('player-error-box');
-  const offEl           = document.getElementById('offline-overlay');
-  const unmEl           = document.getElementById('unmute-overlay');
-  const refreshBtn      = document.getElementById('refresh-btn');
+  const loading  = document.getElementById('player-loading');
+  const errorBox = document.getElementById('player-error-box');
 
   loading.style.display  = 'flex';
   errorBox.style.display = 'none';
-  offEl.style.display    = 'none';
-  unmEl.style.display    = 'none';
   
-  // إيقاف وتدمير أي مشغل Clappr سابق بأمان
-  if (clapprInstance) {
-    try { clapprInstance.destroy(); } catch(e){}
-    clapprInstance = null;
-  }
+  // تفريغ أي بث سابق لتجنب التداخل
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  video.pause();
+  video.src = '';
   iframe.src = '';
   customContainer.innerHTML = '';
 
-  // إخفاء كل نوافذ التشغيل مبدئياً
-  clapprContainer.style.display = 'none';
-  iframe.style.display          = 'none';
+  // إخفاء كافة المشغلات مؤقتاً
+  video.style.display  = 'none';
+  iframe.style.display = 'none';
   customContainer.style.display = 'none';
-  refreshBtn.style.display      = 'none';
 
   const trimmed = url.trim();
 
-  // 1. فحص تشغيل الأكواد الكاملة المباشرة (كامل كود الـ iframe أو الـ embed)
+  // 1. فحص تشغيل الأكواد الكاملة المباشرة (مثل كود iframe كامل أو embed)
   if (trimmed.startsWith('<')) {
     customContainer.style.display = 'block';
     customContainer.innerHTML = trimmed;
-    injectOverlaysCustom(); // المحافظة على شعار الموقع عائماً فوق كود التضمين
     loading.style.display = 'none';
     return;
   }
@@ -957,129 +861,86 @@ async function playUrl(url, label, isEmbed = false) {
     iframe.onload = () => {
       loading.style.display = 'none';
     };
-    injectOverlaysCustom(); // المحافظة على الشعار عائماً فوق رابط التضمين
     return;
   }
 
-  // 3. تشغيل ملفات الـ m3u8 و الـ mp4 الأساسية عبر مشغل Clappr
-  clapprContainer.style.display = 'block';
-  refreshBtn.style.display      = 'flex';
+  // 3. تشغيل ملفات الـ m3u8 و الـ mp4 الأساسية بسرعة فائقة كـ StreamDNS
+  video.style.display = 'block';
 
-  clapprInstance = new Clappr.Player({
-      source: url,
-      parentId: '#clappr-player',
-      width: '100%', height: '100%',
-      autoPlay: true, mute: true, preload: 'auto',
-      playback: {
-          playInline: true, recycleVideo: true,
-          hlsjsConfig: {
-              enableWorker: true, lowLatencyMode: true,
-              maxBufferLength: 12, liveBackBufferLength: 0,
-              manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10
-          }
+  // تشغيل ملفات MP4 المباشرة بسرعة فائقة مباشرة دون Hls
+  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
+    video.src = url;
+    video.play()
+      .then(() => { loading.style.display = 'none'; })
+      .catch(e => {
+        loading.style.display = 'none';
+        showPlayerError('خطأ في التشغيل: ' + e.message);
+      });
+    return;
+  }
+
+  // استدعاء وتجهيز مكتبة Hls لوضع الاستجابة الفائقة والكمون المنخفض
+  try {
+    await loadHlsJS();
+  } catch {
+    loading.style.display = 'none';
+    showPlayerError('فشل تحميل hls.js — تحقق من الإنترنت');
+    return;
+  }
+
+  const isHLS = url.includes('.m3u8') || url.includes('/hls/');
+
+  if (isHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
+    hlsInstance = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true,
+      backBufferLength: 90,
+    });
+    hlsInstance.loadSource(url);
+    hlsInstance.attachMedia(video);
+    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      loading.style.display = 'none';
+      video.play().catch(()=>{});
+    });
+    hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+      if (data.fatal) {
+        loading.style.display = 'none';
+        showPlayerError(`فشل البث: ${data.details}`);
       }
-  });
-
-  // التحكم بإعدادات كتم الصوت وإظهار اللوجو العائم فور جاهزية البث
-  clapprInstance.on(Clappr.Events.PLAYER_READY, function() {
-      loading.style.display = 'none';
-      injectOverlays();
-      clapprInstance.unmute();
-      setTimeout(function() {
-          if (clapprInstance && clapprInstance.getVolume() === 0)
-              document.getElementById('unmute-overlay').style.display = 'flex';
-      }, 700);
-  });
-
-  clapprInstance.on(Clappr.Events.CORE_CONTAINERS_CREATED, injectOverlays);
-
-  clapprInstance.on(Clappr.Events.PLAYER_PLAY, function() {
-      document.getElementById('offline-overlay').style.display = 'none';
-  });
-
-  // معالجة الأخطاء وظهور نافذة الأوفلاين في حال تعطل البث المباشر
-  clapprInstance.on(Clappr.Events.PLAYER_ERROR, function() {
-      loading.style.display = 'none';
-      document.getElementById('offline-overlay').style.display = 'flex';
-      document.getElementById('unmute-overlay').style.display  = 'none';
-      setTimeout(function() {
-          if (currentStreamUrl && currentStreamUrl !== '#' && clapprInstance) {
-              clapprInstance.load(currentStreamUrl);
-              clapprInstance.play();
-          }
-      }, 5000);
-  });
-
-  // تثبيت الشعار والمشغلات بداخل المشغل حتى في وضع ملء الشاشة (Fullscreen)
-  clapprInstance.on(Clappr.Events.CORE_FULLSCREEN, function(full) {
-      var logo = document.getElementById('custom-logo');
-      if (logo) logo.style.setProperty('right', full ? '4.5%' : '2.1%', 'important');
-      injectOverlays();
-  });
-}
-
-// حقن وتثبيت الشعار والنوافذ التفاعلية بداخل حاوية Clappr
-function injectOverlays() {
-    if (!clapprInstance || !clapprInstance.core || !clapprInstance.core.el) return;
-    var c = clapprInstance.core.el;
-    ['custom-logo','unmute-overlay','offline-overlay','refresh-btn','player-loading','player-error-box'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && el.parentElement !== c) c.appendChild(el);
     });
+  } else if (isHLS && video.canPlayType('application/vnd.apple.mpegurl')) {
+    // تشغيل مباشر على متصفحات Safari أو الهواتف التي تدعم البث تلقائياً
+    video.src = url;
+    video.play()
+      .then(() => { loading.style.display = 'none'; })
+      .catch(e => {
+        loading.style.display = 'none';
+        showPlayerError(e.message);
+      });
+  } else {
+    loading.style.display = 'none';
+    showPlayerError('المتصفح لا يدعم هذا البث — افتح الرابط في VLC');
+  }
 }
 
-// إعادة اللوجو والنوافذ لحاويتها الطبيعية عند تشغيل آيفريم أو أكواد تضمين مخصصة خارج Clappr
-function injectOverlaysCustom() {
-    const wrapper = document.getElementById('clappr-wrapper');
-    ['custom-logo','unmute-overlay','offline-overlay','refresh-btn','player-loading','player-error-box'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && el.parentElement !== wrapper) wrapper.appendChild(el);
-    });
-}
-
-// تفعيل وتعديل الصوت بنقرة واحدة
-function unmutePlayer() {
-    if (clapprInstance) { clapprInstance.unmute(); clapprInstance.setVolume(100); }
-    document.getElementById('unmute-overlay').style.display = 'none';
-}
-
-document.body.addEventListener('click', function() {
-    if (document.getElementById('unmute-overlay').style.display === 'flex') unmutePlayer();
-}, { once: true });
-
-// تحديث البث الحالي يدوياً
-function reloadCurrentChannel() {
-    var btn = document.getElementById('refresh-btn');
-    btn.classList.add('spinning');
-    setTimeout(function() { btn.classList.remove('spinning'); }, 650);
-    if (!currentStreamUrl || currentStreamUrl === '#') return;
-    document.getElementById('offline-overlay').style.display = 'none';
-    if (clapprInstance) {
-        try {
-            clapprInstance.load(currentStreamUrl);
-            clapprInstance.play();
-            clapprInstance.unmute();
-            clapprInstance.setVolume(100);
-            document.getElementById('unmute-overlay').style.display = 'none';
-        } catch(e) { playUrl(currentStreamUrl, document.getElementById('player-title').textContent); }
-    } else {
-        playUrl(currentStreamUrl, document.getElementById('player-title').textContent);
-    }
+function showPlayerError(msg) {
+  document.getElementById('main-video').style.display = 'none';
+  document.getElementById('iframe-player').style.display = 'none';
+  document.getElementById('custom-player-container').style.display = 'none';
+  document.getElementById('player-error-box').style.display = 'flex';
+  document.getElementById('player-error-msg').textContent = msg || 'تعذّر تشغيل البث';
 }
 
 function closePlayer() {
-  if (clapprInstance) {
-    try { clapprInstance.destroy(); } catch(e){}
-    clapprInstance = null;
-  }
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  const v = document.getElementById('main-video');
   const iframe = document.getElementById('iframe-player');
   const customContainer = document.getElementById('custom-player-container');
   
+  v.pause(); v.src = ''; v.style.display = 'none';
   iframe.src = ''; iframe.style.display = 'none';
   customContainer.innerHTML = ''; customContainer.style.display = 'none';
   
-  document.getElementById('offline-overlay').style.display = 'none';
-  document.getElementById('unmute-overlay').style.display  = 'none';
   document.getElementById('player-error-box').style.display = 'none';
   document.getElementById('player-loading').style.display   = 'flex';
   showPage('main');
