@@ -6,7 +6,6 @@
 <title>Elwazer TV</title>
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 :root {
@@ -95,18 +94,51 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .nav-live-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1.2s infinite;}
 
-.player-wrapper-outer{flex:1;min-height:0;background:#000;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden;}
-.player-wrapper{position:relative;width:100%;height:100%;max-width:120vh;max-height:calc(100vh - 190px);aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;box-shadow:0 15px 40px rgba(0,0,0,.6);}
-/* Clappr full fill */
-#clappr-container{width:100%;height:100%;background:#000;}
-#clappr-container .player-poster,
-#clappr-container [data-player]{width:100%!important;height:100%!important;}
-#clappr-container video{width:100%!important;height:100%!important;object-fit:fill!important;}
-#main-video{width:100%;height:100%;background:#000;display:none;object-fit:fill !important;}
-video::-webkit-media-controls-fullscreen-button{display:none !important;}
-#iframe-player{width:100%;height:100%;border:none;background:#000;display:none;}
-#custom-player-container{width:100%;height:100%;background:#000;display:none;}
-#custom-player-container iframe,#custom-player-container embed{width:100% !important;height:100% !important;border:none !important;}
+.player-wrapper-outer{flex:1;min-height:0;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.player-wrapper{position:relative;width:100%;height:100%;max-width:100%;max-height:calc(100vh - 116px);aspect-ratio:16/9;background:#000;}
+#main-video{width:100%;height:100%;background:#000;display:block;object-fit:fill;}
+/* إخفاء controls الافتراضي وإظهار controls المخصص */
+#main-video::-webkit-media-controls{display:none!important;}
+#iframe-player{width:100%;height:100%;border:none;background:#000;display:none;position:absolute;inset:0;}
+#custom-player-container{width:100%;height:100%;background:#000;display:none;position:absolute;inset:0;}
+#custom-player-container iframe,#custom-player-container embed{width:100%!important;height:100%!important;border:none!important;}
+
+/* ── CUSTOM CONTROLS ── */
+#video-controls{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,0.85));
+  padding:24px 16px 10px;
+  display:flex;flex-direction:column;gap:8px;
+  z-index:20;
+  opacity:0;transition:opacity 0.25s;
+}
+.player-wrapper:hover #video-controls,
+.player-wrapper.show-controls #video-controls{opacity:1;}
+
+/* شريط التقدم */
+#progress-bar{
+  width:100%;height:4px;background:rgba(255,255,255,0.2);
+  border-radius:4px;cursor:pointer;position:relative;
+}
+#progress-fill{height:100%;background:var(--red);border-radius:4px;width:0%;pointer-events:none;}
+#progress-bar:hover{height:6px;}
+
+/* صف أزرار التحكم */
+.ctrl-row{display:flex;align-items:center;gap:10px;}
+.ctrl-btn{
+  background:none;border:none;color:#fff;
+  cursor:pointer;padding:4px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.85;transition:opacity .15s;font-size:18px;line-height:1;
+}
+.ctrl-btn:hover{opacity:1;}
+.ctrl-btn svg{width:20px;height:20px;fill:currentColor;}
+#time-display{font-size:12px;color:rgba(255,255,255,.7);font-family:monospace;white-space:nowrap;}
+.ctrl-spacer{flex:1;}
+/* مستوى الصوت */
+#vol-wrap{display:flex;align-items:center;gap:6px;}
+#vol-bar{width:70px;height:3px;background:rgba(255,255,255,.25);border-radius:3px;cursor:pointer;position:relative;}
+#vol-fill{height:100%;background:#fff;border-radius:3px;width:100%;pointer-events:none;}
 
 .custom-video-logo{position:absolute !important;top:-1% !important;right:2.1% !important;z-index:999999 !important;width:18% !important;aspect-ratio:1.45/1 !important;object-fit:contain !important;pointer-events:none !important;background:transparent !important;}
 #player-wrapper:fullscreen .custom-video-logo,#player-wrapper:-webkit-full-screen .custom-video-logo{right:2.1% !important;top:-1% !important;width:18% !important;}
@@ -217,13 +249,39 @@ video::-webkit-media-controls-fullscreen-button{display:none !important;}
   </div>
   <div class="player-wrapper-outer">
     <div class="player-wrapper" id="player-wrapper">
-      <!-- Clappr Player -->
-      <div id="clappr-container"></div>
-      <!-- Fallback native video -->
       <video id="main-video" playsinline></video>
       <iframe id="iframe-player" allowfullscreen></iframe>
       <div id="custom-player-container"></div>
       <img src="logo.png" class="custom-video-logo" id="custom-logo" alt="Logo">
+
+      <!-- CUSTOM CONTROLS -->
+      <div id="video-controls">
+        <div id="progress-bar" onclick="seekVideo(event)" onmousemove="previewSeek(event)">
+          <div id="progress-fill"></div>
+        </div>
+        <div class="ctrl-row">
+          <!-- play/pause -->
+          <button class="ctrl-btn" id="btn-play" onclick="togglePlay()">
+            <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <!-- صوت -->
+          <button class="ctrl-btn" id="btn-mute" onclick="toggleMute()">
+            <svg id="icon-vol" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <svg id="icon-mute" viewBox="0 0 24 24" style="display:none"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06A8.99 8.99 0 0 0 17.73 19l2 2L21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          </button>
+          <div id="vol-wrap">
+            <div id="vol-bar" onclick="setVolume(event)"><div id="vol-fill"></div></div>
+          </div>
+          <span id="time-display">0:00 / --:--</span>
+          <div class="ctrl-spacer"></div>
+          <!-- fullscreen -->
+          <button class="ctrl-btn" onclick="toggleFullscreen()">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </button>
+        </div>
+      </div>
+
       <div class="player-loading" id="player-loading">
         <div class="spinner-big"></div>
         <p>جاري تحميل البث...</p>
@@ -597,18 +655,8 @@ function playMovie(i) {
 }
 
 // ══════════════════════════════════════════════════════
-//  PLAYER ENGINE — Clappr
+//  PLAYER ENGINE
 // ══════════════════════════════════════════════════════
-let clapprPlayer = null;
-
-function destroyClappr() {
-  if (clapprPlayer) {
-    try { clapprPlayer.destroy(); } catch(e) {}
-    clapprPlayer = null;
-    document.getElementById('clappr-container').innerHTML = '';
-  }
-}
-
 async function playUrl(url, label, isEmbed = false) {
   currentStreamUrl = url;
   const video   = document.getElementById('main-video');
@@ -620,98 +668,112 @@ async function playUrl(url, label, isEmbed = false) {
   loading.style.display = 'flex';
   errBox.style.display  = 'none';
 
-  // إيقاف كل المشغلات القديمة
-  destroyClappr();
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
   video.pause(); video.removeAttribute('src'); video.load();
   iframe.src = ''; custom.innerHTML = '';
   video.style.display  = 'none';
   iframe.style.display = 'none';
   custom.style.display = 'none';
-  document.getElementById('clappr-container').style.display = 'none';
 
   const trimmed = url.trim();
 
-  // كود مضمّن مباشرة
   if (trimmed.startsWith('<')) {
     custom.style.display = 'block'; custom.innerHTML = trimmed;
     loading.style.display = 'none'; return;
   }
 
-  // embed خارجي
-  const isDirectStream = url.includes('.m3u8') || url.includes('.mp4') || url.includes('/hls/') || url.includes('.mkv');
+  const isDirectStream = url.includes('.m3u8') || url.includes('.mp4') || url.includes('/hls/');
   if (isEmbed || !isDirectStream) {
     extractAndPlay(url, video, iframe, loading);
     return;
   }
 
-  // تشغيل مباشر بـ Clappr
-  loading.style.display = 'none';
-  document.getElementById('clappr-container').style.display = 'block';
-  playClappr(url, label);
-}
+  video.style.display = 'block';
+  initVideoControls(video);
 
-function playClappr(url, label) {
-  const container = document.getElementById('clappr-container');
-  container.innerHTML = '';
-  container.style.display = 'block';
+  try { await loadHlsJS(); } catch { loading.style.display='none'; showPlayerError('فشل تحميل hls.js'); return; }
 
-  const loading = document.getElementById('player-loading');
-  loading.style.display = 'none';
-
-  try {
-    clapprPlayer = new Clappr.Player({
-      source: url,
-      parentId: '#clappr-container',
-      width: '100%',
-      height: '100%',
-      autoPlay: true,
-      mute: false,
-      preload: 'auto',
-      playback: {
-        playInline: true,
-        recycleVideo: true,
-        hlsjsConfig: {
-          enableWorker: true,
-          lowLatencyMode: true,
-          maxBufferLength: 20,
-          liveBackBufferLength: 0,
-          manifestLoadingMaxRetry: 6,
-          levelLoadingMaxRetry: 6,
-        }
-      }
-    });
-
-    clapprPlayer.on(Clappr.Events.PLAYER_READY, () => {
-      clapprPlayer.play();
-      // نقل اللوجو داخل مشغل Clappr
-      injectLogoIntoClappr();
-    });
-
-    clapprPlayer.on(Clappr.Events.PLAYER_ERROR, () => {
-      // جرّب الـ proxy تلقائياً
-      if (!url.includes(STATIC_CONFIG.proxy)) {
-        destroyClappr();
-        playClappr(STATIC_CONFIG.proxy + encodeURIComponent(url), label);
-      } else {
-        showPlayerError('تعذّر تشغيل البث');
-      }
-    });
-
-    clapprPlayer.on(Clappr.Events.CORE_FULLSCREEN, injectLogoIntoClappr);
-
-  } catch(e) {
-    showPlayerError('فشل تحميل المشغل');
+  if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+    setupHls(url, video, loading);
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = url;
+    video.play().then(() => { loading.style.display='none'; }).catch(() => showPlayerError());
+  } else {
+    loading.style.display='none'; showPlayerError('المتصفح لا يدعم هذا البث');
   }
 }
 
-function injectLogoIntoClappr() {
-  if (!clapprPlayer || !clapprPlayer.core || !clapprPlayer.core.el) return;
-  const playerEl = clapprPlayer.core.el;
-  const logo = document.getElementById('custom-logo');
-  if (logo && logo.parentElement !== playerEl) {
-    playerEl.appendChild(logo);
-  }
+// ── ربط الـ controls بالـ video ──
+function initVideoControls(video) {
+  const progressFill = document.getElementById('progress-fill');
+  const timeDisplay  = document.getElementById('time-display');
+  const iconPlay     = document.getElementById('icon-play');
+  const iconPause    = document.getElementById('icon-pause');
+  const volFill      = document.getElementById('vol-fill');
+
+  // تحديث شريط التقدم والوقت
+  video.ontimeupdate = () => {
+    if (!video.duration) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    if (progressFill) progressFill.style.width = pct + '%';
+    if (timeDisplay) timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+  };
+
+  video.onplay  = () => { if(iconPlay) iconPlay.style.display='none'; if(iconPause) iconPause.style.display=''; };
+  video.onpause = () => { if(iconPlay) iconPlay.style.display=''; if(iconPause) iconPause.style.display='none'; };
+
+  // إظهار controls عند التفاعل
+  let hideTimer;
+  const wrapper = document.getElementById('player-wrapper');
+  const show = () => {
+    wrapper.classList.add('show-controls');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => wrapper.classList.remove('show-controls'), 3000);
+  };
+  wrapper.addEventListener('mousemove', show);
+  wrapper.addEventListener('touchstart', show, { passive: true });
+
+  // مستوى الصوت
+  if (volFill) volFill.style.width = (video.volume * 100) + '%';
+}
+
+function togglePlay() {
+  const v = document.getElementById('main-video');
+  if (v.paused) v.play(); else v.pause();
+}
+
+function toggleMute() {
+  const v = document.getElementById('main-video');
+  const iconVol  = document.getElementById('icon-vol');
+  const iconMute = document.getElementById('icon-mute');
+  v.muted = !v.muted;
+  if (iconVol)  iconVol.style.display  = v.muted ? 'none' : '';
+  if (iconMute) iconMute.style.display = v.muted ? '' : 'none';
+}
+
+function seekVideo(e) {
+  const v = document.getElementById('main-video');
+  if (!v.duration) return;
+  const bar = document.getElementById('progress-bar');
+  const pct = e.offsetX / bar.offsetWidth;
+  v.currentTime = pct * v.duration;
+}
+
+function previewSeek(e) {}
+
+function setVolume(e) {
+  const v = document.getElementById('main-video');
+  const bar = document.getElementById('vol-bar');
+  const pct = Math.max(0, Math.min(1, e.offsetX / bar.offsetWidth));
+  v.volume = pct;
+  document.getElementById('vol-fill').style.width = (pct * 100) + '%';
+}
+
+function formatTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
 
@@ -845,20 +907,16 @@ function showPlayerError(msg) {
 }
 
 function closePlayer() {
-  destroyClappr();
   if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
   const v = document.getElementById('main-video');
   const iframe = document.getElementById('iframe-player');
   const custom = document.getElementById('custom-player-container');
   v.pause(); v.removeAttribute('src'); v.load();
+  v.style.display = 'none';
   iframe.src=''; iframe.style.display='none';
   custom.innerHTML=''; custom.style.display='none';
   document.getElementById('player-error-box').style.display='none';
   document.getElementById('player-loading').style.display='flex';
-  // رجّع اللوجو لمكانه الأصلي
-  const logo = document.getElementById('custom-logo');
-  const wrapper = document.getElementById('player-wrapper');
-  if (logo && wrapper && logo.parentElement !== wrapper) wrapper.appendChild(logo);
   showPage('main');
 }
 
@@ -868,13 +926,9 @@ function openVLC() {
 }
 
 function toggleFullscreen() {
-  if (clapprPlayer) {
-    clapprPlayer.core.toggleFullscreen();
-  } else {
-    const w = document.getElementById('player-wrapper');
-    if (!document.fullscreenElement) w.requestFullscreen().catch(()=>{});
-    else document.exitFullscreen();
-  }
+  const w = document.getElementById('player-wrapper');
+  if (!document.fullscreenElement) w.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
 }
 
 // ══════════════════════════════════════════════════════
