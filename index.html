@@ -138,25 +138,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 #progress-bar{
   position:absolute;bottom:40px;left:0;right:0;
   height:3px;background:rgba(255,255,255,.2);
-  cursor:pointer;
-  z-index:21;opacity:0;
+  cursor:pointer;z-index:21;opacity:0;
+  direction:ltr;
   transition:opacity 0.3s ease, height 0.15s;
   pointer-events:none;
 }
-/* يظهر فقط لو مش live */
 .player-wrapper:not(.is-live):hover #progress-bar,
 .player-wrapper:not(.is-live).show-controls #progress-bar{
   opacity:1;pointer-events:all;
 }
-#progress-bar:hover{height:5px;bottom:38px;}
+#progress-bar:hover{height:5px;}
 #progress-fill{
   height:100%;background:#e63946;width:0%;
-  pointer-events:none;position:relative;
+  pointer-events:none;position:relative;direction:ltr;
 }
 #progress-fill::after{
-  content:'';position:absolute;right:-5px;top:50%;
+  content:'';position:absolute;right:-6px;top:50%;
   transform:translateY(-50%) scale(0);
-  width:12px;height:12px;border-radius:50%;background:#e63946;
+  width:13px;height:13px;border-radius:50%;background:#e63946;
   transition:transform .12s;
 }
 #progress-bar:hover #progress-fill::after{transform:translateY(-50%) scale(1);}
@@ -807,18 +806,18 @@ function renderMatches(matches) {
     const hasServers = servers.length > 0;
     const cardClass  = hasServers ? (m.isLive ? 'match-card live-now has-link' : 'match-card has-link') : (m.isLive ? 'match-card live-now' : 'match-card');
 
-    // encode الـ servers array عشان نبعتها للـ player
+    // encode الـ servers array
     const encodedServers = hasServers
       ? encodeURIComponent(JSON.stringify(servers)) : '';
 
-    // زر واحد بس — الاختيار جوا المشغل
+    // زر واحد "شاهد" — السيرفرات تظهر جوا المشغل
     const actionHtml = hasServers
       ? `<button class="btn-watch"
            onclick="event.stopPropagation();openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}','${encodedServers}')">
            ▶ شاهد
          </button>` : '';
 
-    // الكليك على الكارت
+    // الكليك على الكارت يفتح أول سيرفر
     const cardClick = hasServers
       ? `onclick="openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}','${encodedServers}')"` : '';
 
@@ -873,7 +872,12 @@ function openStream(encodedUrl, encodedTitle, encodedServers) {
 
 function buildServerStrip(servers, activeUrl, title) {
   const strip = document.getElementById('channel-strip');
-  if (!servers || servers.length <= 1) {
+  if (!servers || servers.length === 0) {
+    strip.innerHTML = '';
+    return;
+  }
+  // لو سيرفر واحد بس — ما نظهرش الشريط
+  if (servers.length === 1) {
     strip.innerHTML = '';
     return;
   }
@@ -1020,7 +1024,48 @@ function initVideoControls(video) {
   wrapper.addEventListener('mouseleave', onLeave);
 
   // في fullscreen — استخدم document عشان يلتقط حركة الماوس
-  document.addEventListener('fullscreenchange', () => {
+  // ── مفاتيح الكيبورد ──
+document.addEventListener('keydown', (e) => {
+  const player = document.getElementById('page-player');
+  if (!player || !player.classList.contains('active')) return;
+  const v = document.getElementById('main-video');
+  if (!v) return;
+  switch(e.key) {
+    case 'ArrowRight':
+      e.preventDefault();
+      seekRel(10);
+      break;
+    case 'ArrowLeft':
+      e.preventDefault();
+      seekRel(-10);
+      break;
+    case ' ':
+    case 'k':
+      e.preventDefault();
+      togglePlay();
+      break;
+    case 'f':
+      e.preventDefault();
+      toggleFullscreen();
+      break;
+    case 'm':
+      e.preventDefault();
+      toggleMute();
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      v.volume = Math.min(1, v.volume + 0.1);
+      document.getElementById('vol-fill').style.width = (v.volume * 100) + '%';
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      v.volume = Math.max(0, v.volume - 0.1);
+      document.getElementById('vol-fill').style.width = (v.volume * 100) + '%';
+      break;
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement === wrapper) {
       document.addEventListener('mousemove', onMove);
     } else {
