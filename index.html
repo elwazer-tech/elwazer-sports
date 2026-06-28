@@ -234,11 +234,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 
 
 
-.channel-strip{background:#080808;border-top:1px solid #111;padding:12px 24px;display:flex;gap:10px;overflow-x:auto;flex-shrink:0;}
+.channel-strip{background:#0a0a0f;border-top:1px solid #1a1a1a;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;flex-shrink:0;align-items:center;}
 .channel-strip::-webkit-scrollbar{display:none;}
-.strip-ch{flex-shrink:0;padding:7px 16px;border-radius:8px;background:#111;border:1px solid #222;color:#888;font-size:13px;font-weight:600;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;white-space:nowrap;}
-.strip-ch:hover{border-color:#333;color:#ccc;}
-.strip-ch.active{background:var(--red);border-color:var(--red);color:#fff;}
+.strip-label{font-size:11px;color:#555;font-family:'Tajawal',sans-serif;white-space:nowrap;margin-left:4px;flex-shrink:0;}
+.strip-ch{flex-shrink:0;padding:6px 16px;border-radius:20px;background:#111;border:1px solid #222;color:#888;font-size:13px;font-weight:600;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;white-space:nowrap;}
+.strip-ch:hover{border-color:#444;color:#ccc;}
+.strip-ch.active{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 0 12px var(--red-glow);}
 
 #app-loading{position:fixed;inset:0;background:var(--void);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:999;}
 .app-brand{font-size:28px;font-weight:800;}
@@ -487,8 +488,37 @@ async function initMain() {
   showPage('main');
   buildDayTabs();
   buildMovies();
-  await loadMatches(activeDay);
+
+  // رجّع للـ tab اللي كان فيه قبل الـ refresh
+  const savedTab = sessionStorage.getItem('activeTab') || 'matches';
+  const savedDay = sessionStorage.getItem('activeDay') || 'today';
+  activeDay = savedDay;
+
+  if (savedTab === 'movies') {
+    // فعّل تاب الأفلام
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    const moviesBtn = document.querySelector('.nav-tab:last-child');
+    if (moviesBtn) moviesBtn.classList.add('active');
+    document.getElementById('tab-matches').style.display = 'none';
+    document.getElementById('tab-movies').style.display  = 'block';
+  } else {
+    // فعّل اليوم المحفوظ في جدول المباريات
+    document.querySelectorAll('.day-btn').forEach(btn => {
+      if (btn.textContent.trim() === getDayLabel(savedDay)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    await loadMatches(savedDay);
+  }
+
   startAutoRefresh();
+}
+
+function getDayLabel(key) {
+  const map = { yesterday: 'الأمس', today: 'اليوم', tomorrow: 'الغد' };
+  return map[key] || 'اليوم';
 }
 
 // ══════════════════════════════════════════════════════
@@ -503,6 +533,7 @@ function switchTab(tab, btn) {
   btn.classList.add('active');
   document.getElementById('tab-matches').style.display = tab === 'matches' ? 'block' : 'none';
   document.getElementById('tab-movies').style.display  = tab === 'movies'  ? 'block' : 'none';
+  sessionStorage.setItem('activeTab', tab);
 }
 
 // ══════════════════════════════════════════════════════
@@ -524,6 +555,7 @@ function selectDay(key, btn) {
   activeDay = key;
   document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  sessionStorage.setItem('activeDay', key);
   loadMatches(key);
 }
 
@@ -716,16 +748,20 @@ function renderMatches(matches) {
     const hasServers = servers.length > 0;
     const cardClass  = hasServers ? (m.isLive ? 'match-card live-now has-link' : 'match-card has-link') : (m.isLive ? 'match-card live-now' : 'match-card');
 
-    // أزرار السيرفرات
-    const actionHtml = hasServers ? servers.map((srv, si) => `
-      <button class="btn-watch ${si > 0 ? 'secondary' : ''}"
-        onclick="event.stopPropagation();openStream('${encodeURIComponent(srv.url)}','${encodeURIComponent(key1)}')">
-        ${si === 0 ? '▶ ' : ''}${srv.name}
-      </button>`).join('') : '';
+    // encode الـ servers array عشان نبعتها للـ player
+    const encodedServers = hasServers
+      ? encodeURIComponent(JSON.stringify(servers)) : '';
 
-    // الكليك على الكارت يفتح أول سيرفر
+    // زر واحد بس — الاختيار جوا المشغل
+    const actionHtml = hasServers
+      ? `<button class="btn-watch"
+           onclick="event.stopPropagation();openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}','${encodedServers}')">
+           ▶ شاهد
+         </button>` : '';
+
+    // الكليك على الكارت
     const cardClick = hasServers
-      ? `onclick="openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}')"` : '';
+      ? `onclick="openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}','${encodedServers}')"` : '';
 
     return `
       <div class="${cardClass}" ${cardClick}>
@@ -744,16 +780,47 @@ function renderMatches(matches) {
 // ══════════════════════════════════════════════════════
 //  OPEN STREAM
 // ══════════════════════════════════════════════════════
-function openStream(encodedUrl, encodedTitle) {
-  const url   = decodeURIComponent(encodedUrl);
-  const title = decodeURIComponent(encodedTitle);
+function openStream(encodedUrl, encodedTitle, encodedServers) {
+  const url     = decodeURIComponent(encodedUrl);
+  const title   = decodeURIComponent(encodedTitle);
+  const servers = encodedServers ? JSON.parse(decodeURIComponent(encodedServers)) : [];
+
   document.getElementById('player-title').textContent = title;
   document.getElementById('player-sub').textContent   = 'بث مباشر';
-  document.getElementById('channel-strip').innerHTML  = '';
   document.getElementById('player-live-indicator').style.display = 'flex';
-  // اضف is-live عشان يخفي شريط التقدم
   document.getElementById('player-wrapper').classList.add('is-live');
+
+  // بناء شريط السيرفرات
+  buildServerStrip(servers, url, title);
+
   showPage('player');
+  playUrl(url, title);
+}
+
+function buildServerStrip(servers, activeUrl, title) {
+  const strip = document.getElementById('channel-strip');
+  if (!servers || servers.length <= 1) {
+    strip.innerHTML = '';
+    return;
+  }
+  strip.innerHTML = '<span class="strip-label">سيرفر:</span>' +
+    servers.map((srv, i) => {
+      const isActive = srv.url === activeUrl;
+      return `<button class="strip-ch ${isActive ? 'active' : ''}"
+        onclick="switchServer('${encodeURIComponent(srv.url)}','${encodeURIComponent(title)}','${encodeURIComponent(JSON.stringify(servers))}', this)">
+        ${srv.name || ('سيرفر ' + (i+1))}
+      </button>`;
+    }).join('');
+}
+
+function switchServer(encodedUrl, encodedTitle, encodedServers, btn) {
+  const url     = decodeURIComponent(encodedUrl);
+  const title   = decodeURIComponent(encodedTitle);
+  const servers = JSON.parse(decodeURIComponent(encodedServers));
+
+  document.querySelectorAll('.strip-ch').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
   playUrl(url, title);
 }
 
