@@ -68,8 +68,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 .vs-score{font-size:20px;font-weight:800;letter-spacing:1px;}
 .vs-dash{font-size:18px;color:var(--text3);font-weight:700;}
 .match-action{min-width:70px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
-.btn-watch{background:var(--red);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;box-shadow:0 4px 14px var(--red-glow);}
-.btn-watch:hover{background:#ff4757;transform:scale(1.04);}
+.match-action{min-width:70px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.btn-watch{background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .15s;box-shadow:0 4px 14px var(--red-glow);white-space:nowrap;}
+.btn-watch:hover{background:#ff4757;transform:scale(1.03);}
+.btn-watch.secondary{background:var(--card2);border:1px solid var(--border2);box-shadow:none;color:var(--text);}
+.btn-watch.secondary:hover{background:var(--border2);border-color:var(--border2);}
 
 #tab-movies{padding:20px 28px;}
 .movies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;justify-items:stretch;;direction:rtl;}
@@ -692,17 +695,40 @@ function renderMatches(matches) {
     const homeLogo = m.homeLogo ? `<img src="${m.homeLogo}" alt="${m.home}" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : '🏠';
     const awayLogo = m.awayLogo ? `<img src="${m.awayLogo}" alt="${m.away}" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : '🚌';
 
-    // ← يجلب الرابط من DYNAMIC (config.json) وليس من الكود الثابت
     const key1      = m.home + ' vs ' + m.away;
     const key2      = m.away + ' vs ' + m.home;
-    const configUrl = DYNAMIC.matchLinks[key1] || DYNAMIC.matchLinks[key2] || '';
-    const streamUrl = configUrl || m.watchUrl || '';
+    const configVal = DYNAMIC.matchLinks[key1] || DYNAMIC.matchLinks[key2] || '';
 
-    const cardClass  = streamUrl ? (m.isLive ? 'match-card live-now has-link' : 'match-card has-link') : (m.isLive ? 'match-card live-now' : 'match-card');
-    const actionHtml = streamUrl ? `<button class="btn-watch" onclick="event.stopPropagation();openStream('${encodeURIComponent(streamUrl)}','${encodeURIComponent(key1)}')">▶ شاهد</button>` : '';
+    // دعم الصيغتين: string مباشر أو object بـ servers array
+    let servers = [];
+    if (configVal) {
+      if (typeof configVal === 'string') {
+        servers = [{ name: 'شاهد', url: configVal }];
+      } else if (configVal.servers) {
+        servers = configVal.servers.filter(s => s.url);
+      } else if (configVal.url) {
+        servers = [{ name: 'شاهد', url: configVal.url }];
+      }
+    } else if (m.watchUrl) {
+      servers = [{ name: 'شاهد', url: m.watchUrl }];
+    }
+
+    const hasServers = servers.length > 0;
+    const cardClass  = hasServers ? (m.isLive ? 'match-card live-now has-link' : 'match-card has-link') : (m.isLive ? 'match-card live-now' : 'match-card');
+
+    // أزرار السيرفرات
+    const actionHtml = hasServers ? servers.map((srv, si) => `
+      <button class="btn-watch ${si > 0 ? 'secondary' : ''}"
+        onclick="event.stopPropagation();openStream('${encodeURIComponent(srv.url)}','${encodeURIComponent(key1)}')">
+        ${si === 0 ? '▶ ' : ''}${srv.name}
+      </button>`).join('') : '';
+
+    // الكليك على الكارت يفتح أول سيرفر
+    const cardClick = hasServers
+      ? `onclick="openStream('${encodeURIComponent(servers[0].url)}','${encodeURIComponent(key1)}')"` : '';
 
     return `
-      <div class="${cardClass}" ${streamUrl?`onclick="openStream('${encodeURIComponent(streamUrl)}','${encodeURIComponent(key1)}')"`:''}>
+      <div class="${cardClass}" ${cardClick}>
         <div class="match-time">${timeHtml}</div>
         <div class="match-divider"></div>
         <div class="match-teams">
