@@ -98,7 +98,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--void);color:var(--text);m
 
 .player-wrapper-outer{flex:1;min-height:0;background:#000;display:flex;align-items:stretch;justify-content:center;overflow:hidden;}
 .player-wrapper{position:relative;width:100%;height:100%;max-width:100%;max-height:calc(100vh - 116px);aspect-ratio:16/9;background:#000;}
-#main-video{width:100%;height:100%;background:#000;display:block;object-fit:fill;}
+#main-video{width:100%;height:100%;background:#000;display:block;object-fit:fill;pointer-events:none !important;}
 /* إخفاء controls الافتراضي وإظهار controls المخصص */
 #main-video::-webkit-media-controls{display:none!important;}
 #iframe-player{width:100%;height:100%;border:none;background:#000;display:none;position:absolute;inset:0;}
@@ -1006,7 +1006,7 @@ async function playUrl(url, label, isEmbed = false) {
   video.style.display = 'block';
   initVideoControls(video);
 
-  try { await loadHlsJS(); } catch { loading.style.display='none'; showPlayerError('فشل تحميل hls.js'); return; }
+  try { await loadHlsJS(); } catch(e) { loading.style.display='none'; showPlayerError('فشل تحميل hls.js'); return; }
 
   if (typeof Hls !== 'undefined' && Hls.isSupported()) {
     setupHls(url, video, loading);
