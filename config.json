@@ -41,7 +41,7 @@
       "year": "2026",
       "quality": "تصوير سينما",
       "emoji": "https://gate.ahram.org.eg/Media/News/2026/4/11/2026-639115304309295522-929.jpeg",
-      "url": "https://elwazer-tv.vercel.app/api/proxy?url=https://shoftv.net:80/live/277468210/118457482/17595.m3u8",
+      "url": "https://elwazer-tv.vercel.app/api/proxy?url=http://shoftv.net:80/live/277468210/118457482/17595.m3u8",
       "isEmbed": false,
       "genre": "كوميدي"
     },
