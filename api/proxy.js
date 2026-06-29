@@ -7,9 +7,8 @@ export default async function handler(req, res) {
 
   const isM3u8 = url.endsWith('.m3u8');
   const isTs = url.endsWith('.ts');
-  const isHtml = url.includes('/matches-'); // لدعم جلب صفحات جدول المباريات فائق السرعة وبثبات تام
+  const isHtml = url.includes('/matches-'); 
 
-  // إذا لم يكن الطلب يخص المباريات أو الجدول، نقوم بالتحويل لتفادي انهيار فيرسل
   if (!isM3u8 && !isTs && !isHtml) {
     res.writeHead(302, { Location: url });
     return res.end();
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
 
-    // معالجة جلب جدول مباريات اليوم والأمس والغد فائق السرعة
     if (isHtml) {
       const htmlText = await response.text();
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -61,7 +59,6 @@ export default async function handler(req, res) {
       return res.status(200).send(lines.join('\n'));
     }
 
-    // لقطع بث الـ TS الصغيرة الخاصة بالمباريات
     const buffer = await response.arrayBuffer();
     res.setHeader('Content-Type', contentType || 'video/mp2t');
     res.setHeader('Cache-Control', 'public, max-age=86400');
