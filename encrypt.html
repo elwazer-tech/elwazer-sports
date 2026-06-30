@@ -14,7 +14,7 @@
 </head>
 <body>
   <div class="card">
-    <h2>مشفّر الروابط التلقائي لكود config.json</h2>
+    <h2>مشفّر الروابط التلقائي المطور</h2>
     <p style="color: #7a8499; margin-bottom: 20px; font-size: 13px;">ضع الرابط الأصلي بالأسفل لإنشاء الكود المشفر فوراً</p>
     <input type="text" id="rawUrl" placeholder="أدخل الرابط هنا (مثل http://shoftv.net...)">
     <button onclick="generate()">تشفير الرابط</button>
@@ -24,10 +24,8 @@
     function generate() {
       const url = document.getElementById('rawUrl').value.trim();
       if(!url) return alert('الرجاء إدخال رابط أولاً');
-      // تشفير Base64 نقي ومباشر متوافق بالكامل مع خوادم فيرسل وبدون أخطاء ترميز
       const b64 = btoa(url);
-      const encrypted = b64.split('').reverse().join('');
-      document.getElementById('result').value = encrypted;
+      document.getElementById('result').value = b64;
     }
   </script>
 </body>
