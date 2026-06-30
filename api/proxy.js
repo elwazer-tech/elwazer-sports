@@ -31,12 +31,20 @@ export default async function handler(req, res) {
   // فك التشفير فوراً عند استقبال الطلب
   const decryptedUrl = decodeURL(url);
 
-  // استخدام includes بدلاً من endsWith لضمان الكشف السليم حتى بوجود توكنات في الرابط
+  // ── قفل النطاق الصارم (Strict Domain Lock) ──
+  // نتحقق من الـ Referer لمنع تشغيل الروابط تماماً في VLC أو أي موقع خارجي
+  const referer = req.headers['referer'] || '';
+  const allowedDomains = ['elwazer-tv.vercel.app', 'elwazer-tech.github.io', 'blogspot.com'];
+  const isAllowed = allowedDomains.some(domain => referer.includes(domain));
+  
+  if (!isAllowed) {
+    return res.status(403).send('Forbidden: Direct access is not allowed.');
+  }
+
   const isM3u8 = decryptedUrl.includes('.m3u8');
   const isTs = decryptedUrl.includes('.ts');
   const isHtml = decryptedUrl.includes('/matches-'); 
 
-  // إذا لم يكن الطلب بث مباريات أو جدول، نقوم بالتحويل
   if (!isM3u8 && !isTs && !isHtml) {
     res.writeHead(302, { Location: decryptedUrl });
     return res.end();
@@ -80,7 +88,6 @@ export default async function handler(req, res) {
           absoluteUrl = new URL(line, targetBase).href;
         }
         
-        // تشفير قطع الفيديو الداخلية TS
         const encryptedTs = encodeURL(absoluteUrl);
         return `${proxyUrl}?url=${encodeURIComponent(encryptedTs)}`;
       });
@@ -89,7 +96,6 @@ export default async function handler(req, res) {
       return res.status(200).send(lines.join('\n'));
     }
 
-    // لقطع بث الـ TS الصغيرة الخاصة بالمباريات
     const buffer = await response.arrayBuffer();
     res.setHeader('Content-Type', contentType || 'video/mp2t');
     res.setHeader('Cache-Control', 'public, max-age=86400');
