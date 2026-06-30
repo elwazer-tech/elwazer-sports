@@ -14,17 +14,29 @@
 </head>
 <body>
   <div class="card">
-    <h2>مشفّر الروابط التلقائي المطور</h2>
-    <p style="color: #7a8499; margin-bottom: 20px; font-size: 13px;">ضع الرابط الأصلي بالأسفل لإنشاء الكود المشفر فوراً</p>
+    <h2>مشفّر الروابط التلقائي المطور مع قفل الحماية</h2>
+    <p style="color: #7a8499; margin-bottom: 20px; font-size: 13px;">ضع الرابط الأصلي بالأسفل لإنشاء الكود المشفر بالمفتاح السري</p>
     <input type="text" id="rawUrl" placeholder="أدخل الرابط هنا (مثل http://shoftv.net...)">
     <button onclick="generate()">تشفير الرابط</button>
     <textarea id="result" readonly="readonly" placeholder="سيظهر الكود المشفر هنا لتقوم بنسخه..."></textarea>
   </div>
   <script>
+    const SECRET_KEY = 'elwazer_tv_secret_key'; // يجب أن يطابق نفس مفتاح السيرفر تماماً
+
+    function xorEncryptDecrypt(str, key) {
+      let output = '';
+      for (let i = 0; i < str.length; i++) {
+        const charCode = str.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+        output += String.fromCharCode(charCode);
+      }
+      return output;
+    }
+
     function generate() {
       const url = document.getElementById('rawUrl').value.trim();
       if(!url) return alert('الرجاء إدخال رابط أولاً');
-      const b64 = btoa(url);
+      const xored = xorEncryptDecrypt(url, SECRET_KEY);
+      const b64 = btoa(unescape(encodeURIComponent(xored)));
       document.getElementById('result').value = b64;
     }
   </script>
