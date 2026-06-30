@@ -28,17 +28,21 @@ export default async function handler(req, res) {
     return res.status(400).send('Missing target url');
   }
 
-  // فك التشفير فوراً عند استقبال الطلب
+  // فك التشفير فوراً عند استقبال الطلب من الذاكرة
   const decryptedUrl = decodeURL(url);
 
   // ── قفل النطاق الصارم (Strict Domain Lock) ──
-  // نتحقق من الـ Referer لمنع تشغيل الروابط تماماً في VLC أو أي موقع خارجي
+  // نتحقق من الـ Referer لمنع تشغيل الروابط تماماً في VLC أو أي متصفح خارجي
   const referer = req.headers['referer'] || '';
   const allowedDomains = ['elwazer-tv.vercel.app', 'elwazer-tech.github.io', 'blogspot.com'];
-  const isAllowed = allowedDomains.some(domain => referer.includes(domain));
   
-  if (!isAllowed) {
+  if (!referer) {
     return res.status(403).send('Forbidden: Direct access is not allowed.');
+  }
+  
+  const isAllowed = allowedDomains.some(domain => referer.includes(domain));
+  if (!isAllowed) {
+    return res.status(403).send('Forbidden: Domain not allowed.');
   }
 
   const isM3u8 = decryptedUrl.includes('.m3u8');
