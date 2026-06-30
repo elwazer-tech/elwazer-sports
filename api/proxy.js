@@ -1,19 +1,33 @@
-// دالة فك التشفير القياسي المتوافق 100%
+// مفتاح التشفير السري الخاص بك (لا يظهر لأي زائر)
+const SECRET_KEY = 'elwazer_tv_secret_key'; 
+
+function xorEncryptDecrypt(str, key) {
+  let output = '';
+  for (let i = 0; i < str.length; i++) {
+    const charCode = str.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    output += String.fromCharCode(charCode);
+  }
+  return output;
+}
+
+// دالة فك التشفير الآمن باستخدام المفتاح السري
 function decodeURL(str) {
   try {
     if (str.startsWith('http://') || str.startsWith('https://') || str.startsWith('<')) {
       return str;
     }
-    return Buffer.from(str, 'base64').toString('utf-8');
+    const b64Decoded = Buffer.from(str, 'base64').toString('utf-8');
+    return xorEncryptDecrypt(b64Decoded, SECRET_KEY);
   } catch(e) {
     return str;
   }
 }
 
-// دالة التشفير القياسي لقطع الـ TS
+// دالة التشفير الآمن باستخدام المفتاح السري لقطع الـ TS
 function encodeURL(str) {
   try {
-    return Buffer.from(str, 'utf-8').toString('base64');
+    const xored = xorEncryptDecrypt(str, SECRET_KEY);
+    return Buffer.from(xored, 'utf-8').toString('base64');
   } catch(e) {
     return str;
   }
