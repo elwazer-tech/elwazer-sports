@@ -24,7 +24,8 @@
     function generate() {
       const url = document.getElementById('rawUrl').value.trim();
       if(!url) return alert('الرجاء إدخال رابط أولاً');
-      const b64 = btoa(unescape(encodeURIComponent(url)));
+      // تشفير Base64 نقي ومباشر متوافق بالكامل مع خوادم فيرسل وبدون أخطاء ترميز
+      const b64 = btoa(url);
       const encrypted = b64.split('').reverse().join('');
       document.getElementById('result').value = encrypted;
     }
