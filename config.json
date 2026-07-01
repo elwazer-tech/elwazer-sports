@@ -9,52 +9,6 @@
     ]
   },
    "العراق vs السنبغال": "https://edge22.776740.ir.cdn.ir/hls2/sport.m3u8"
-  },
-  "movies": [
-    {
-      "title": "WWE LIVE",
-      "year": "",
-      "quality": "HD",
-      "emoji": "https://dynamicmedia.livenationinternational.com/k/s/o/8d2860f4-749e-477a-8593-5061b886c043.jpg",
-      "url": "",
-      "isEmbed": false,
-      "genre": ""
-    },
-    {
-      "title": "فاميلي بيزنس",
-      "year": "2026",
-      "quality": "HD",
-      "emoji": "https://assets.voxcinemas.com/posters/P_HO00012993_1773228351581.jpg",
-      "url": "DRgDEQlfXXASFyldCQIADQFxHAAbFgUDBFUNHixbACcJHQsTVgYuBBQfHA8eCRcRH2gOFzFEBghGEQM4XhxOURUTCB4THy4CDzQAEgVGABc2BgEJBhUZCwAUXTYaEjoLSBVDSBVuRQhKEFQ=",
-      "isEmbed": false,
-      "genre": "كوميدي"
-    },
-    {
-      "title": "الكلام على ايه",
-      "year": "2026",
-      "quality": "تصوير سينما",
-      "emoji": "https://media0103.elcinema.com/uploads/_315x420_cb2afb51a2df394d5b604818b92d024840b360f88d6c144cafa0911e051f7582.jpg",
-      "url": "DRgDEQlfXXAVGD4VBBAGSxstDEocCA4SBVcdHDQbG20QVwxEVA1xAxEUCQ==",
-      "isEmbed": true,
-      "genre": "كوميدي"
-    },
-    {
-      "title": "الكراش",
-      "year": "2026",
-      "quality": "تصوير سينما",
-      "emoji": "https://gate.ahram.org.eg/Media/News/2026/4/11/2026-639115304309295522-929.jpeg",
-      "url": "https://mp4plus.org/embed-izig8q9qj85n.html",
-      "isEmbed": true,
-      "genre": "كوميدي"
-    },
-    {
-      "title": "ان غاب القط",
-      "year": "2026",
-      "quality": "HD",
-      "emoji": "https://assets.voxcinemas.com/posters/P_HO00012719_1767186910608.jpeg",
-      "url": "https://elwazer-tv.vercel.app/api/proxy?url=",
-      "isEmbed": false,
-      "genre": "كوميدي"
-    }
+}
   ]
 }
